@@ -83,7 +83,7 @@ coreos:
         ExecStartPre=/usr/bin/mkdir -p ${BLACKSMITH_KUBELET_DIR}
         ExecStartPre=/usr/bin/mkdir -p ${BLACKSMITH_MANIFESTS_DIR}
         ExecStartPre=/usr/bin/mkdir -p ${BLACKSMITH_KUBECONFIG_DIR}
-        ExecStartPre=/usr/bin/curl -L -o ${BLACKSMITH_KUBELET_DIR}/kubelet -z /opt/kubernetes/bin/kubelet http://${BLACKSMITH_MASTE_IP}:8000/${PATH_TO_KUBELET}
+        ExecStartPre=/usr/bin/curl -L -o ${BLACKSMITH_KUBELET_DIR}/kubelet -z /opt/kubernetes/bin/kubelet http://${BLACKSMITH_MASTER_IP}:8000/${PATH_TO_KUBELET}
         ExecStartPre=/usr/bin/curl -L -o ${BLACKSMITH_KUBECONFIG_DIR}/config -z /home/core/.kube/config http://${BLACKSMITH_MASTER_IP}:8000/${PATH_TO_KUBE_CONFIG}
         ExecStartPre=/usr/bin/chmod +x ${BLACKSMITH_KUBELET_DIR}/kubelet
         ExecStart=${BLACKSMITH_KUBELET_DIR}/kubelet \
