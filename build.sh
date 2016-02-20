@@ -1,10 +1,7 @@
 #!/bin/bash
 
 #It is recommended that you change the following settings:
-#INITIAL_SERVER : Specifies the address fromwhich blacksmith/kubernetes master(s) will read the built directory
 #up/var/kuber_env : These variables are injected in the cloudconfig files in cloud/ early on
-
-INITIAL_SERVER=${INITIAL_SERVER:-192.168.1.1/blacksmith}
 
 rm -rf build
 mkdir build
@@ -47,7 +44,8 @@ cp kubernetes/* build/kubernetes/*
 cp -r up build/up
 
 cd build
-grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=$INITIAL_SERVER|g'
+#execute this line in build/ and replace SERVER with the http address which will correspond to this build/ direcotry
+#grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=SERVER|g'
 cd ..
 
 #put envsubst binary in build/utils
