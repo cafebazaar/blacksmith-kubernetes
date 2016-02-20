@@ -107,7 +107,7 @@ coreos:
         [Service]
         ExecStartPre=/usr/bin/mkdir -p ${BLACKSMITH_KUBECONFIG_DIR}/
         ExecStartPre=/usr/bin/curl -L -o ${BLACKSMITH_KUBECONFIG_DIR}/config -z /home/core/.kube/config http://${BLACKSMITH_MASTER_IP}:8000/${PATH_TO_KUBE_CONFIG}
-        ExecStartPre=/usr/bin/curl -L -o {BLACKSMITH_KUBEPROXY_DIR}/kube-proxy -z /opt/kubernetes/bin/kube-proxy http://${BLACKSMITH_MASTER_IP}:8000/${PATH_TO_KUBE_PROXY}
+        ExecStartPre=/usr/bin/curl -L -o ${BLACKSMITH_KUBEPROXY_DIR}/kube-proxy -z /opt/kubernetes/bin/kube-proxy http://${BLACKSMITH_MASTER_IP}:8000/${PATH_TO_KUBE_PROXY}
         ExecStartPre=/usr/bin/chmod +x ${BLACKSMITH_KUBEPROXY_DIR}/kube-proxy
         ExecStart=${BLACKSMITH_KUBEPROXY_DIR}/kube-proxy \
         --kubeconfig=${BLACKSMITH_KUBECONFIG_DIR}/config\
