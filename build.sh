@@ -23,7 +23,7 @@ mkdir kubernetes/manifests
 mkdir up
 mkdir up/vars
 mkdir utils
-cd..
+cd ..
 
 source up/vars/kuber_env.sh
 source blacksmith/blacksmith_variables.sh
@@ -47,8 +47,7 @@ cp kubernetes/* build/kubernetes/*
 cp -r up build/up
 
 cd build
-grep --null -lr "REPO=X" | xargs --null sed -i 's/REPO=X/REPO=$INITIAL_SERVER/g'   
+grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=$INITIAL_SERVER|g'
 cd ..
-
 
 #put envsubst binary in build/utils

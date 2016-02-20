@@ -1,5 +1,5 @@
 #!/bin/bash
-export REPO=http://192.168.60.1/blacksmith
+export REPO=X
 
 
 wget $REPO/up/vars/variables1.sh
