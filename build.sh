@@ -38,9 +38,9 @@ cp coreos_install/* build/coreos_install/
 
 
 #put kube-proxy, kubectl, kubelet binaries in build/kubernetes/bin/
-envsubst < manifests/apiserver.yaml > build/manifests/apiserver.yaml
-envsubst < manifests/controller.yaml > build/manifests/controller.yaml
-envsubst < manifests/scheduler.yaml > build/manifests/scheduler.yaml
+envsubst < kubernetes/manifests/apiserver.yaml > build/kubernetes/manifests/apiserver.yaml
+envsubst < kubernetes/manifests/controller.yaml > build/kubernetes/manifests/controller.yaml
+envsubst < kubernetes/manifests/scheduler.yaml > build/kubernetes/manifests/scheduler.yaml
 cp kubernetes/* build/kubernetes/*
 
 
