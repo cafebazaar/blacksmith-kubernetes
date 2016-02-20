@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-scheduler
+    image: colonelmo/hyperkube
+    command:
+    - /hyperkube
+    - scheduler
+    - --master=http://192.168.60.101:8080
+

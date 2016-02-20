@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-scheduler
+    image: ${BLACKSMITH_HYPERKUBE_IMAGE}
+    command:
+    - /hyperkube
+    - scheduler
+    - --master=http://${BLACKSMITH_MASTER_IP}:8080
+

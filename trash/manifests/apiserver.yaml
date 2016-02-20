@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-apiserver
+    image: colonelmo/hyperkube
+    command:
+    - /hyperkube
+    - apiserver
+    - --bind-address=0.0.0.0
+    - --insecure-bind-address=192.168.60.101
+    - --etcd-servers=http://192.168.60.101:4001,http://192.168.60.102:4001,http://192.168.60.103:4001
+    - --allow-privileged=true
+    - --service-cluster-ip-range=10.100.0.0/16
+    - --secure-port=443
+    - --advertise-address=192.168.60.101
+    - --admission-control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+    - --tls-cert-file=/srv/kubernetes/server.cert
+    - --tls-private-key-file=/srv/kubernetes/server.key
+    - --client-ca-file=/srv/kubernetes/ca.crt
+    - --token-auth-file=/srv/kubernetes/known_tokens.csv
+    ports:
+    - containerPort: 443
+      hostPort: 443
+      name: https
+    - containerPort: 8080
+      hostPort: 8080
+      name: local
+    volumeMounts:
+    - mountPath: /srv/kubernetes
+      name: srvkube
+      readOnly: true
+    - mountPath: /etc/ssl
+      name: etcssl
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /srv/kubernetes
+    name: srvkube
+  - hostPath:
+      path: /etc/ssl
+    name: etcssl
