@@ -10,6 +10,6 @@ mkdir -p $WORKSPACE_DIR/keyring
 
 export NOW=$(pwd)
 cd $WORKSPACE_DIR/keyring; wget -N https://coreos.com/security/image-signing-key/CoreOS_Image_Signing_Key.asc
-gpg --no-default-keyring --keyring $WORKSPACE_DIR/keyring/keyring.gpg --import $WORKSPACE_DIR/keyring/CoreOS_Image_Signing_Key.asc
 cd $NOW
+gpg --no-default-keyring --keyring $WORKSPACE_DIR/keyring/keyring.gpg --import $WORKSPACE_DIR/keyring/CoreOS_Image_Signing_Key.asc
 ./_update.sh $WORKSPACE_DIR $CHANNEL
