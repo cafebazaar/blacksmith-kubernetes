@@ -2,7 +2,7 @@
 Easy workspace generator for blacksmith and kubernetes on baremetal for three machines
 
 ## Get started
-edit `kuber_env.sh` and then execute `build.sh`
+edit `up/vars/kuber_env.sh` and then execute `build.sh`
 
 in `/build` execute the following command but replace SERVER with the http address which will host the build directory (e.g. my.domain.com/blacksmith)
 ```
