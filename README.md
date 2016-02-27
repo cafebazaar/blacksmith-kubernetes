@@ -11,7 +11,7 @@ grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=SERVER|g'
 
 After booting up the first machine with a coreos image:
 ```
-curl -L my.domain.com/coreos_install.sh | sh
+curl -L my.domain.com/coreos_install/1.sh | sh
 ```
 After you finished installing coreos, execute the following command in the machine:
 ```
