@@ -8,7 +8,7 @@ function partitioning {
 	sleep 1
 	echo "making filesystem"
 	sleep 1
-	yes | mkfs.ext4 -L ROOT /dev/$device$partition &&  curl -X PUT "http://<< HostAddr >>/api/flag/state?mac=<< Mac >>&value=inited"
+	yes | mkfs.ext4 -L ROOT /dev/$device$partition &&  curl -X PUT "http://<< .HostAddr >>/api/flag/state?mac=<< .Mac >>&value=inited"
 }
 
 function usage {
