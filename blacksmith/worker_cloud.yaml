@@ -49,7 +49,7 @@ coreos:
         ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://${CURRENT_CLOUDCONFIG_SERVER_IP}:8000/${PATH_TO_KUBE_CONFIG}
         ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kubelet
         ExecStart=/opt/kubernetes/bin/kubelet \
-        --api-servers=https://${BLACKSMITH_MASTER_IP} \
+        --api-servers=http://${BLACKSMITH_MASTER_IP}:8080 \
         --kubeconfig=/home/core/.kube/config \
         --config=/opt/kubernetes/manifests/ \
         --healthz-bind-address=0.0.0.0 \
