@@ -27,6 +27,11 @@ source up/vars/kuber_env.sh
 source blacksmith/blacksmith_variables.sh
 
 cp blacksmith/* build/blacksmith/
+
+cd blacksmith
+tar -czf ../build/blacksmith/workspace.tar.gz workspace
+cd ..
+
 envsubst < cloud/master.template.yaml > build/cloud/cloudconfig1.yaml
 envsubst < cloud/black2.template.yaml > build/cloud/cloudconfig2.yaml
 envsubst < cloud/black3.template.yaml > build/cloud/cloudconfig3.yaml

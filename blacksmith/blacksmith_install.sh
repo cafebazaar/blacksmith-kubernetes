@@ -10,7 +10,18 @@ source blacksmith_variables.sh
 
 source specific_variables.sh
 
-git clone http://github.com/cafebazaar/blacksmith-workspace-kubernetes
+cd ~
+wget $REPO/blacksmith/workspace.tar.gz
+
+mkdir -p $WORKSPACE_CREATION
+tar xvfz workspace.tar.gz -C $WORKSPACE_CREATION
+sudo chown core:core $WORKSPACE_CREATION/workspace -R
+cd $WORKSPACE_CREATION/workspace
+sudo chmod +x create.sh
+./create.sh
+cd ~
+
+sudo chown core:core $WORKSPACE_CREATION/workspace -R
 
 mkdir -p $WORKSPACE_PATH/files/bin
 
@@ -24,12 +35,8 @@ sudo chmod +x envsubst
 
 cp /home/core/.kube/config $WORKSPACE_PATH/$PATH_TO_KUBE_CONFIG
 
-cd $WORKSPACE_PATH
-#make
-cd ~
 
 git clone https://github.com/cafebazaar/blacksmith
 cd blacksmith
-sudo ./install-as-docker.sh $WORKSPACE_PATH/workspace ${BLACKSMITH_INSTALL_ETCD_ENDPOINTS} ${THIS_MACHINE_BLACKSMITH_INTERFACE_NAME}
+sudo ./install-as-docker.sh $WORKSPACE_PATH ${BLACKSMITH_INSTALL_ETCD_ENDPOINTS} ${THIS_MACHINE_BLACKSMITH_INTERFACE_NAME}
 cd ..
-

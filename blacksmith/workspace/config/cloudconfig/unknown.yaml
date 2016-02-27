@@ -1,0 +1,13 @@
+#cloud-config
+users:
+  - name: core
+    passwd: $6$rounds=4096$3tuHjuC2Fn$9TkmDxYgkuj/q5RKkganSDkparpTKnv23jAywtwJpL6C4ogWhkQfJzw6nghf9h8S2HkhO.7LSLfSgAFWUE7h4.
+
+write_files:
+  - path: /tmp/partitioning.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "partitioning.sh" >>
+  - path: /tmp/state
+    content: unknown

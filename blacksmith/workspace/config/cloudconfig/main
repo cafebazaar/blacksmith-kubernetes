@@ -1,0 +1,9 @@
+<<with $state := (V "state")>>
+<< if $state | eq "force-init">>
+<<template "force-init.yaml" .>>
+<<else if $state | eq "inited">>
+<<template "inited.yaml" .>>
+<<else>>
+<<template "unknown.yaml" .>>
+<<end>>
+<<end>>

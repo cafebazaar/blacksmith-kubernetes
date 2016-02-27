@@ -1,0 +1,40 @@
+#cloud-config
+#hostname: node<< V "MacAddr" >>
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDC7f7Uz7tz5GXYDdMFUgM6s/r/ORDvKCZkdTSem3cgESw6pU51vXiW0OdJCN+oMHNhhVhHR093vH4iLeAQtEy2BkJ8F7NRX7cEPF88eLWVNYxNGZ0cJ2paM0YcXxvIREpjMI71JCWNFsP9SZSacC/9CiqmIqxig8WlVX2AIara1U3a09uI9n9nunz6ep4kR9duy9Df+sdPoEsJ5Mf7okWm7Da290FE6/Gke2UHPFZO3/rRkEqmH09p/2nYlz3rna5pBl/Zcanl3Ar9ffhdD6i3YWhe4AZlMZ6o2kItih/EP9esU333PlF4NDNMi8iIdMpMuAYKwiY1TSskI+SH3MgN colonelmo@aghajoonvirt
+users:
+  - name: core
+    passwd: $6$rounds=4096$t5DTrkv0xotec$PNU2cFuMfs1dSvV0b5We7uhSqBUDgtDXw158J/GrYeESS858s7FXTcowYWIizjzzB3t1sSoV3tVddwiNw/oP/.
+write_files:
+  - path: /tmp/partitioning.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "partitioning.sh" >>
+  - path: /tmp/state
+    content: unknown
+coreos:
+  etcd2:
+    # listen on both the official ports and the legacy ports
+    # legacy ports can be omitted if your application doesn't depend on them
+    proxy: on
+    initial-cluster: default=http://172.20.0.2:2380
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+  units:
+    - name: etcd2.service
+      command: start
+    - name: my_reboot.service
+      command: start
+      content: |
+        [Unit]
+        Description=My Test Service
+        After=etcd2.service
+
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=/usr/bin/curl -L -o /home/core/reboot_service_script.sh 172.20.0.2:8000/files/reb.sh
+        ExecStart=/usr/bin/bash /home/core/reboot_service_script.sh
+
+        [Install]
+        WantedBy=multi-user.target
+    

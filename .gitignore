@@ -1,4 +1,4 @@
 coreos
 kubernetes/bin
-utils
+./utils
 build

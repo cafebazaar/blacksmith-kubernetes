@@ -1,0 +1,80 @@
+#cloud-config
+
+# include one or more SSH public keys
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKHS5Iax3lhsPAHCpWoYGa2Jxy+OBBdEoWys4SyNJeHoa/gRtVJ6t/Txr+U3gj64gpmgLiiuhAFmooAfDYEf9DLccgnY7heAb5vaeYKSvjf25+poTFQwmWz0AobNSbIRn09dVaQCwW55avbHAYn9HknuOq1ECYWu24rxhWYzjccmKyMz/MyEeT+pF3Gzp1UuycL1Skz6MJr/FedrqdhCqrDL8/ihHdewUvkOcOnlnQW94yZM+NCRYbvHbZHyebu1eOAUyqgZ+U/83ttTx+BRPzeour/6nne4krYR35tNoomJE0LT6sIJfUVjfcXH9l8WTXXrMKBP992/pM4HOUvNut ali@ali-javadi-pc
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClPnUQMJOwF4qEep7zcKr53caZ9G3ZZak08km9zp/k1Xv2Clekq0LWlMXifnkbWxuiJRnoqvKf+lNAHVfA7Ns/TrUFjOh+vdzVZnOtW519dEFM5jGEym0g39+/iH5f5Wbk13qG1lVe0z2yr43f+neg/oNcXmO4VhzApxxl/iACjgiAHa6QAN7M3CPYFee5VZiJPcUs36Vs4Le/Qg8Qjt+5yxbhrpPPE0/MHegzJY1RNp0FCrXDj6MuJKk1zPePNldHj4OQRkieAltsbUms3vE41h3RVaPZSgRxVgBoN/x2ovbQV8PUcnPICuqhDS/zK3CtqWSC9BhACzSPGf5aOq6H core@aghajoon1.cafebazaar.ir
+coreos:
+  etcd2:
+    # listen on both the official ports and the legacy ports
+    # legacy ports can be omitted if your application doesn't depend on them
+    proxy: on
+    initial-cluster: default=http://192.168.100.41:2380
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+      - name: 50-network-config.conf
+        content: |
+          [Service]
+          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"10.1.0.0/16", "Backend": {"Type": "vxlan"}}'
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 60-registry-mirror.conf
+          content: |
+            [Service]
+            Environment='DOCKER_OPTS=--registry-mirror=http://france.cafebazaar.ir:5000 --insecure-registry=10.0.0.0/8 --insecure-registry=192.168.0.0/16'
+        - name: 50-flanneld.conf
+          content: |
+            [Unit]
+            After=flanneld.service
+            Requires=flanneld.service
+    - name: kube-kubelet.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Kubelet
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        ExecStartPre=/usr/bin/mkdir -p /opt/kubernetes/bin/
+        ExecStartPre=/usr/bin/mkdir -p /opt/kubernetes/manifests/
+        ExecStartPre=/usr/bin/mkdir -p /home/core/.kube/
+        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kubelet -z /opt/kubernetes/bin/kubelet http://192.168.100.41:8000/files/kubelet
+        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/manifests/fluentd-es.yaml -z /opt/kubernetes/manifests/fluentd-es.yaml http://192.168.100.41:8000/files/fluentd-es.yaml
+        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://192.168.100.41:8000/files/config
+        ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kubelet
+        ExecStart=/opt/kubernetes/bin/kubelet \
+        --api-servers=https://192.168.100.41 \
+        --kubeconfig=/home/core/.kube/config \
+        --config=/opt/kubernetes/manifests/ \
+        --healthz-bind-address=0.0.0.0 \
+        --cluster-dns=10.100.0.10\
+        --cluster-domain=kubernetes.local\
+        --healthz-port=10248\
+        --allow-privileged=true\
+        --logtostderr=true
+        Restart=always
+        RestartSec=10
+    - name: kube-proxy.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Proxy
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        # wait for kubernetes master to be up and ready
+        ExecStartPre=/usr/bin/mkdir -p /home/core/.kube/
+        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://192.168.100.41:8000/files/config
+        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kube-proxy -z /opt/kubernetes/bin/kube-proxy http://192.168.100.41:8000/files/kube-proxy
+        ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kube-proxy
+        ExecStart=/opt/kubernetes/bin/kube-proxy \
+        --kubeconfig=/home/core/.kube/config \
+        --logtostderr=true
+        Restart=always
+        RestartSec=10
