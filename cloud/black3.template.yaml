@@ -1,35 +1,6 @@
 #cloud-config
-#
-# <variables>
-#
-# BLACKSMITH_ETCD_CLUSTER_TOKEN : trivial
-# BLACKSMITH_KUBELET_DIR : /opt/kubernetes/bin
-# BLACKSMITH_KUBECONFIG_DIR : /home/core/.kube
-# BLACKSMITH_MANIFESTS_DIR : /opt/kubernetes/manifests
-# BLACKSMITH_KUBEPROXY_DIR : /opt/kubernetes/bin #
-# BLACKSMITH_MASTER_HOST_NAME : kubernetes master hostname
-# BLACKSMITH_MASTER_ETCD_NAME : name of the etcd instance running on master
-# BLACKSMITH_MASTER_IP : ip address on which the master will listen, advertise etcd, etc.
-# BLACKSMITH_MASTER_INTERNAL_INTERFACE_NAME : name of a network interface in the host running kubernetes master which is connected to the internal network
-#
-#
-# BLACKSMITH_SECOND_HOST_NAME : hostname of the second machine running blacksmith
-# BLACKSMITH_SECOND_ETCD_NAME : name of the etcd instance running on the second machine
-# BLACKSMITH_SECOND_IP : ip address of the second blacksmith server
-#
-# BLACKSMITH_THIRD_HOST_NAME : hostname of the third machine running balcksmith
-# BLACKSMITH_THIRD_ETCD_NAME : name of the etcd instance running on the third machine
-# BLACKSMITH_THIRD_IP : ip address of the third blacksmith server
-# <end of variables>
-# Address=${BLACKSMITH_MASTER_EXTERNAL_ADDRESS}
-# DNS=${BLACKSMITH_MASTER_EXTERNAL_DNS}
-# Gateway=${BLACKSMITH_MASTER_EXTERNAL_GATEWAY}
-# # include one or more SSH public keys
-ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAgy+jGkv9p65j6Y4qxKZhzoBzcfWTkL9VnznrjVn9vztNyUziC/733o3V27hf1CI4juTsZbCKVUBo4xTUIu0lStnSldOuGWdTf1YpNmB5Ro1zr8Aw9dnhztGjtI8WD+7wBGKf3RU/TrfTfORWw9YJckNzwLybmp+l4Rv3A/a/2plk6MEi8jS2U3Di+wCnfArYlXzUUko1TT9QK/6D6lYJki90yXhafjhJZZPsNkRXarLK2gh0HMFDnDOgVNKKMbPF0KO73xauscdeVrE0C/35CkbyuPw8xCaBMvcOMESKuSt/vhXZ9755JX/v6zH59keMRbHun3YDL2xKEmKN5jmL colonelmo@colonelpc
-  - ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAgEAuIqFlIQ1MBKUF6Y4PuvAiHdvHokqRAeKAzwiiQkX3deV02O77VERpTbHvMk02tw1lKht/grDI0FOXnFkfK4uLkUugwfhwPG1vlod6djzPoar9nOEqXNcOJ9kDpm0csEDjFK1LkBW8YhSFzK0bYX/vYbrQvGGZr679TWqgh80P/sSwZHlMDPP3xswQxYY4V4EN1lJsxT1PgFqo/C9hUF+YcZuTQcZRcmrdg9Q2IEiqyxFgPY2JgxOrpAOjjXdyHSzBGWlOOfg8e1SLlb3Q7Ll5II+hw6SG/UN87N7mdltWw7NhgudoJvVpqaU3OjFOp76CoariVtkoQNBpgy26QmnPlKUuRD3OY//SEQy9Imde55yw6oJnsLAw3hCQqenIEOFMb8IZkSUJFzN3JJ/qbtutx+GYSpKDvIPZnLyg0mcyNAqW4hTNK6Zlb2oij3OYMSem0lH8QAhCvM4We6SyGM2DBmRSQXOD+wAGbyztBCC9lpJV22uo1BeLeY4W33yz8vaUL+JdJwvkoClAlGf9dNFuZ9VUCOqeiUyil4EvqmBinHSHqn8S0GK7tfYcjYeNi+LsGA/QljFen8KE7tLXbbdcYPSBL9Lgp20CILiEHgNRFAQ2QmXW9A4bvHf7X3MSfrnZH/F3wr/7KWmWpiE/XDVyVTCrC0wjpqMmS35wp1+7PE= omid@cafebazaar.ir
 
-hostname: ${BLACKSMITH_THIRD_HOST_NAME}
+hostname: kuberthird.${CLUSTER_NAME}
 coreos:
   etcd2:
     name: ${BLACKSMITH_THIRD_ETCD_NAME}
@@ -42,6 +13,26 @@ coreos:
     initial-cluster-state: new
     cors: '*'
   units:
+    ## Configure your network
+    - name: 00-${BLACKSMITH_THIRD_INTERNAL_INTERFACE_NAME}.network
+      runtime: true
+      content: |
+        [Match]
+        Name=${BLACKSMITH_THIRD_INTERNAL_INTERFACE_NAME}
+
+        [Network]
+        Address=${BLACKSMITH_THIRD_IP}/${INTERNAL_NETWORK_NETSIZE}
+        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
+        DNS=127.0.0.1
+        DNS=${EXTERNAL_DNS}
+    - name: 00-eno2.network
+      runtime: true
+      content: |
+        [Match]
+        Name=eno2
+
+        [Network]
+        Address=192.168.100.63
     - name: etcd2.service
       command: start
     - name: fleet.service
@@ -65,14 +56,6 @@ coreos:
             [Unit]
             After=flanneld.service
             Requires=flanneld.service
-    - name: 00-${BLACKSMITH_THIRD_INTERNAL_INTERFACE_NAME}.network
-      runtime: true
-      content: |
-        [Match]
-        Name=${BLACKSMITH_THIRD_INTERNAL_INTERFACE_NAME}
-
-        [Network]
-        Address=${BLACKSMITH_THIRD_IP}
     - name: kube-kubelet.service
       command: start
       content: |
@@ -116,3 +99,6 @@ coreos:
         --logtostderr=true
         Restart=always
         RestartSec=10
+
+ssh_authorized_keys:
+# Will be filled by build.sh

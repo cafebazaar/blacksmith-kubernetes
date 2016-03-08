@@ -2,9 +2,12 @@
 Easy workspace generator for blacksmith and kubernetes on baremetal for three machines
 
 ## Get started
-edit `up/vars/kuber_env.sh` and then execute `build.sh`
-
-in `/build` execute the following command but replace SERVER with the http address which will host the build directory (e.g. my.domain.com/blacksmith)
+1. Edit `up/vars/kuber_env.sh`
+2. Put the authorized ssh keys into `up/vars/ssh-keys.yaml`
+3. Edit cloudconfig templates (`cloud/`), if necessary.
+4. Download `kubelet`, `kube-proxy`, and `kubectl` from Kubernetes, and put them into `kubernetes/bin/`.
+5. Execute `build.sh`
+6. in `/build` execute the following command but replace SERVER with the http address which will host the build directory (e.g. my.domain.com/blacksmith)
 ```
 grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=SERVER|g'
 ```

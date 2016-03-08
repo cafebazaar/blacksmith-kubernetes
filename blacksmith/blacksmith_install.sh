@@ -36,7 +36,33 @@ sudo chmod +x envsubst
 cp /home/core/.kube/config $WORKSPACE_PATH/$PATH_TO_KUBE_CONFIG
 
 
-git clone https://github.com/cafebazaar/blacksmith
-cd blacksmith
-sudo ./install-as-docker.sh $WORKSPACE_PATH ${BLACKSMITH_INSTALL_ETCD_ENDPOINTS} ${THIS_MACHINE_BLACKSMITH_INTERFACE_NAME}
-cd ..
+## Installing Blacksmith Docker
+int2ip()
+{
+    local ui32=$1; shift
+    local ip n
+    for n in 1 2 3 4; do
+        ip=$((ui32 & 0xff))${ip:+.}$ip
+        ui32=$((ui32 >> 8))
+    done
+    echo -n $ip
+}
+
+netmask()
+{
+    local mask=$((0xffffffff << (32 - $1))); shift
+    int2ip $mask
+}
+
+VOLUME_ARGS="-v ${WORKSPACE_PATH}:/workspace"
+ARGS="-etcd ${BLACKSMITH_INSTALL_ETCD_ENDPOINTS} -if ${THIS_MACHINE_BLACKSMITH_INTERFACE_NAME} -cluster-name ${CLUSTER_NAME} -lease-start ${INTERNAL_NETWORK_WORKERS_START} -lease-range ${INTERNAL_NETWORK_WORKERS_LIMIT} -lease-subnet $(netmask ${INTERNAL_NETWORK_NETSIZE}) -router ${INTERNAL_NETWORK_GATEWAY_IP} -dns ${EXTERNAL_DNS}"
+
+docker kill -s HUP docker; docker kill blacksmith || echo "NOT FATAL"
+docker rm          blacksmith || echo "NOT FATAL"
+docker run --name  blacksmith --restart=always --net=host -d $VOLUME_ARGS cafebazaar/blacksmith $ARGS
+
+
+## Installing SkyDNS
+docker kill skydns || echo "NOT FATAL"
+docker rm skydns || echo "NOT FATAL"
+docker run -d -p 0.0.0.0:53:53/udp --restart=always --name skydns -e ETCD_MACHINES=${BLACKSMITH_INSTALL_ETCD_ENDPOINTS} skynetservices/skydns

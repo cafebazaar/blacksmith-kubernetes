@@ -36,12 +36,15 @@ envsubst < cloud/master.template.yaml > build/cloud/cloudconfig1.yaml
 envsubst < cloud/black2.template.yaml > build/cloud/cloudconfig2.yaml
 envsubst < cloud/black3.template.yaml > build/cloud/cloudconfig3.yaml
 
+cat up/vars/ssh-keys.yaml >> build/cloud/cloudconfig1.yaml
+cat up/vars/ssh-keys.yaml >> build/cloud/cloudconfig2.yaml
+cat up/vars/ssh-keys.yaml >> build/cloud/cloudconfig3.yaml
+
 cp -r coreos/* build/coreos/
 
 cp coreos_install/* build/coreos_install/
 
-
-#put kube-proxy, kubectl, kubelet binaries in kubernetes/bin/
+# Expects kube-proxy, kubectl, kubelet binaries in kubernetes/bin/
 cp -r kubernetes/bin/* build/kubernetes/bin/
 
 envsubst < kubernetes/manifests/apiserver.yaml > build/kubernetes/manifests/apiserver.yaml
