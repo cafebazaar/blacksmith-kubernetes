@@ -13,41 +13,46 @@ graph cluster {
   #splines="compound"
   edge [
     color="#babdb6"
+    fontname="arial",
+    fontsize=8,
   ];
 
-  private [ label="The Private Net" shape=none, image="images/PrivateNet.png" labelloc=b color="#ffffff"]
+  private [ label="192.168.64.1/20" shape=none, image="images/PrivateNet.png" labelloc=b color="#ffffff"]
   cloud   [ label="The Internet" shape=none, image="images/Internet.png" labelloc=b color="#ffffff"]
   {rank=same; private, cloud}
 
-  bootstraper1 [shape=record, color="#f78787", label = "{{ <en0>en0 | <en1>en1 }|<f0> Bootstraper1|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes API Master\n  |<f5> \n }"];
-  bootstraper2 [shape=record, color="#daeeff", label = "{{ <en0>en0 | <en1>en1 }|<f0> Bootstraper2|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes Worker\n  |<f5> \n }"];
-  bootstraper3 [shape=record, color="#daeeff", label = "{{ <en0>en0 | <en1>en1 }|<f0> Bootstraper3|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes Worker\n  |<f5> role=loadbalancer\n }"];
+  bootstraper1 [shape=record, color="#f78787", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper1|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes API Master\n  |<f5> \n }"];
+  bootstraper2 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper2|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes Worker\n  |<f5> \n }"];
+  bootstraper3 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper3|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes Worker\n  |<f5> role=loadbalancer\n }"];
   {rank=same; bootstraper1, bootstraper2, bootstraper3}
 
-  private -- bootstraper1:en0
-  private -- bootstraper2:en0
-  private -- bootstraper3:en0
-  cloud -- bootstraper3:en1 [color="#a40000"]
+  private -- bootstraper1:eno1 [label="192.168.64.11"]
+  private -- bootstraper2:eno1 [label="192.168.64.12"]
+  private -- bootstraper3:eno1 [label="192.168.64.13"]
+  cloud -- bootstraper1:eno2 [color="#a40000", label="192.168.100.61"]
+  cloud -- bootstraper2:eno2 [color="#a40000", label="192.168.100.62"]
+  cloud -- bootstraper3:eno2 [color="#a40000", label="192.168.100.63"]
 
-  machine1 [shape=record, label = "{{ <en0>en0 | <en1>en1 }|<f0> Ku bernetes Worker\n  |<f2> \n }"];
-  machine2 [shape=record, label = "{{ <en0>en0 | <en1>en1 }|<f0> Kubernetes Worker\n  |<f2> \n }"];
-  machines [shape=record, label = "{{ <en0>en0 | <en1>en1 }|<f0> ...\n }"];
-  machine3 [shape=record, label = "{{ <en0>en0 | <en1>en1 }|<f0> Kubernetes Worker\n  |<f2> role=loadbalancer\n }"];
-  machine4 [shape=record, label = "{{ <en0>en0 | <en1>en1 }|<f0> Kubernetes Worker\n  |<f2> role=loadbalancer\n }"];
+  machine1 [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Ku bernetes Worker\n  |<f2> \n }"];
+  machine2 [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Kubernetes Worker\n  |<f2> \n }"];
+  machines [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> ...\n }"];
+  machine3 [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Kubernetes Worker\n  |<f2> role=loadbalancer\n }"];
+  machine4 [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Kubernetes Worker\n  |<f2> role=loadbalancer\n }"];
   {rank=same; machine1, machine2, machine3, machine4, machines}
 
-  private -- machine1:en0
-  private -- machine2:en0
-  private -- machine3:en0
-  private -- machine4:en0
-  private -- machines:en0
+  private -- machine1:eno1
+  private -- machine2:eno1
+  private -- machine3:eno1
+  private -- machine4:eno1
+  private -- machines:eno1
 
-  bootstraper1:f2 -- machine1:f0 [color="#729fcf"]
-  bootstraper1:f2 -- machine2:f0 [color="#729fcf"]
-  bootstraper1:f2 -- machine3:f0 [color="#729fcf"]
-  bootstraper1:f2 -- machine4:f0 [color="#729fcf"]
-  bootstraper1:f2 -- machines [color="#729fcf"]
+  # To send the workers to the bottom row
+  bootstraper1:f2 -- machine1:f0 [color="none"]
+  bootstraper1:f2 -- machine2:f0 [color="none"]
+  bootstraper1:f2 -- machine3:f0 [color="none"]
+  bootstraper1:f2 -- machine4:f0 [color="none"]
+  bootstraper1:f2 -- machines [color="none"]
 
-  cloud -- machine3:en1 [color="#a40000"]
-  cloud -- machine4:en1 [color="#a40000"]
+  cloud -- machine3:eno2 [color="#a40000", label="Through flags"]
+  cloud -- machine4:eno2 [color="#a40000", label="Through flags"]
 }
