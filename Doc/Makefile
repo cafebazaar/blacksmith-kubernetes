@@ -1,11 +1,11 @@
 DOT=dot
 FORMAT=png
-SRC=Network.dot
+SRC=Network.dot StateMachine.dot
 OUT=$(patsubst %,images/%,$(subst .dot,.$(FORMAT),$(SRC)))
 
 all: $(OUT)
 
-$(OUT): $(SRC)
+images/%.$(FORMAT): %.dot
 	$(DOT) -T$(FORMAT) $^ -o $@
 
 clean:
