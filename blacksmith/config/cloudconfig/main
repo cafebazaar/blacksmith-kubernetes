@@ -1,9 +1,35 @@
+#cloud-config
 <<with $state := (V "state")>>
-<< if $state | eq "">>
+<< if $state | eq "" >>
 <<template "new.yaml" .>>
-<<else>>
-<<template (print $state ".yaml") .>>
-<<end>>
+
+<< else if $state | eq "unknown" >>
+<<template "new.yaml" .>>
+
+<< else if $state | eq "worker" >>
+<<template "worker.yaml" .>>
+
+<< else if $state | eq "init-worker" >>
+<<template "init-worker.yaml" .>>
+
+<< else if $state | eq "init-install-coreos" >>
+<<template "init-install-coreos.yaml" .>>
+
+<< else if $state | eq "bootstrapper1" >>
+<<template "bootstrapper1.yaml" .>>
+
+<< else if $state | eq "bootstrapper2" >>
+<<template "bootstrapper2.yaml" .>>
+
+<< else if $state | eq "bootstrapper3" >>
+<<template "bootstrapper3.yaml" .>>
+
+<< else >>
+write_files:
+  - path: /tmp/state
+    content: UNEXPECTED-> << V "state" >>
+
+<< end >>
 <<end>>
 ssh_authorized_keys:
 <<template "ssh_authorized_keys.yaml" .>>

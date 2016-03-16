@@ -1,4 +1,3 @@
-#cloud-config
 hostname: bootstrapper2.${CLUSTER_NAME}
 coreos:
   etcd2:

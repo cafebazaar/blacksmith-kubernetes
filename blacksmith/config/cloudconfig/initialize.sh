@@ -20,7 +20,7 @@ function install_coreos {
 	curl -X PUT "http://<< .HostAddr >>/api/flag/state?mac=<< .Mac >>&value=<< V "desired-state" >>"
 	curl -L "http://<< .HostAddr >>/t/cc/<< .Mac >>" -o $WORKDIR/cloudconfig.yaml
 
-	coreos-install -c $WORKDIR/cloudconfig.yaml -d  -b http://<< .HostAddr >>/images/
+	coreos-install -c $WORKDIR/cloudconfig.yaml -d $DEVICE -b http://<< .HostAddr >>/images/
 
 	ROOT_DEV=$(blkid -t "LABEL=ROOT" -o device "${DEVICE}"*)
 
@@ -65,7 +65,7 @@ if [ ! -e "/dev/disk/by-label/ROOT" ]; then
 fi
 
 # check for flags
-while getopts "hfr" OPTION
+while getopts "hfri" OPTION
 do
 	 case $OPTION in
 		f)
@@ -85,7 +85,7 @@ done
 
 if $do_install; then
 	install_coreos
-else if $do_partitioning; then
+elif $do_partitioning; then
 	partition_disk
 fi
 

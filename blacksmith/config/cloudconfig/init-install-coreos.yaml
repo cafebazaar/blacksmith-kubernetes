@@ -1,4 +1,3 @@
-#cloud-config
 write_files:
   - path: /tmp/initialize.sh
     encoding: "base64"

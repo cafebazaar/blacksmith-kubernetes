@@ -1,4 +1,3 @@
-#cloud-config
 hostname: ${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME}
 coreos:
   etcd2:

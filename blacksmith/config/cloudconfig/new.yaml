@@ -1,4 +1,5 @@
-#cloud-config
+# TODO: etcd2 configuration
+
 write_files:
   - path: /tmp/initialize.sh
     encoding: "base64"
