@@ -12,7 +12,7 @@ spec:
     - /hyperkube
     - controller-manager
     - --cluster-name=${CLUSTER_NAME}
-    - --master=http://${BLACKSMITH_MASTER_IP}:8080
+    - --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080
     - --service-account-private-key-file=${MASTER_KEY}
     - --root-ca-file=${CA_CERT}
     volumeMounts:

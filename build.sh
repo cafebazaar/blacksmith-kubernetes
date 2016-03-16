@@ -1,51 +1,48 @@
 #!/bin/bash
 
-#It is recommended that you change the following settings:
-#up/var/kuber_env : These variables are injected in the cloudconfig files in cloud/ early on
+# Variables are injected from this configuration file:
+export DOLLAR='$'
+source kuber_env.sh
+int2ip() {
+    local ui32=$1; shift
+    local ip n
+    for n in 1 2 3 4; do
+        ip=$((ui32 & 0xff))${ip:+.}$ip
+        ui32=$((ui32 >> 8))
+    done
+    echo -n $ip
+}
 
+netmask() {
+    local mask=$((0xffffffff << (32 - $1))); shift
+    int2ip $mask
+}
+
+export INTERNAL_NETWORK_NETMASK=$(netmask ${INTERNAL_NETWORK_NETSIZE})
+
+
+## Clean
 rm -rf build
-mkdir build
-cd build
-mkdir blacksmith
-mkdir cloud
-mkdir coreos
-#create coreos/ver.sion.number containing three files:
-#coreos_production_image.bin.bz2
-#coreos_production_image.bin.bz2.sig
-#coreos_production_iso_image.iso
-mkdir coreos_install
-mkdir kubernetes
-mkdir kubernetes/bin
-mkdir kubernetes/manifests
-# will be created while copying
-# mkdir up
-# mkdir up/vars
-mkdir utils
-cd ..
 
-source up/vars/kuber_env.sh
-source blacksmith/blacksmith_variables.sh
 
-cp blacksmith/* build/blacksmith/
+## Blacksmith Workspace
+mkdir -p build/workspace/files
 
-cd blacksmith
-tar -czf ../build/blacksmith/workspace.tar.gz workspace
-cd ..
+cp -r binaries/images build/workspace/
+cp binaries/initial.yaml build/workspace/
+cp -r blacksmith/config build/workspace/
 
-envsubst < cloud/master.template.yaml > build/cloud/cloudconfig1.yaml
-envsubst < cloud/black2.template.yaml > build/cloud/cloudconfig2.yaml
-envsubst < cloud/black3.template.yaml > build/cloud/cloudconfig3.yaml
+cp ssh-keys.yaml >> build/workspace/config/cloudconfig/ssh_authorized_keys.yaml
+envsubst < blacksmith/templates/bootstrapper1.yaml > build/workspace/config/cloudconfig/bootstrapper1.yaml
+envsubst < blacksmith/templates/bootstrapper2.yaml > build/workspace/config/cloudconfig/bootstrapper2.yaml
+envsubst < blacksmith/templates/bootstrapper3.yaml > build/workspace/config/cloudconfig/bootstrapper3.yaml
+envsubst < blacksmith/templates/common-units.yaml > build/workspace/config/cloudconfig/common-units.yaml
+envsubst < blacksmith/blacksmith_install.sh > build/workspace/files/blacksmith_install.sh
+envsubst < blacksmith/templates/worker-units.yaml > build/workspace/config/cloudconfig/worker-units.yaml
+envsubst < blacksmith/templates/worker.yaml > build/workspace/config/cloudconfig/worker.yaml
 
-cat up/vars/ssh-keys.yaml >> build/cloud/cloudconfig1.yaml
-cat up/vars/ssh-keys.yaml >> build/cloud/cloudconfig2.yaml
-cat up/vars/ssh-keys.yaml >> build/cloud/cloudconfig3.yaml
+exit
 
-cp -r coreos/* build/coreos/
-
-cp coreos_install/* build/coreos_install/
-
-# Expects kube-proxy, kubectl, kubelet binaries in kubernetes/bin/
-cp -r kubernetes/bin/* build/kubernetes/bin/
 
 envsubst < kubernetes/manifests/apiserver.yaml > build/kubernetes/manifests/apiserver.yaml
 envsubst < kubernetes/manifests/controller.yaml > build/kubernetes/manifests/controller.yaml
@@ -53,13 +50,3 @@ envsubst < kubernetes/manifests/scheduler.yaml > build/kubernetes/manifests/sche
 cp kubernetes/certgen.sh build/kubernetes/
 cp kubernetes/initiate_master.sh build/kubernetes/
 cp kubernetes/setup.sh build/kubernetes/
-
-#put envsubst binary in utils
-cp utils/envsubst build/utils/envsubst
-
-cp -r up build
-
-cd build
-#execute this line in build/ and replace SERVER with the http address which will correspond to this build/ direcotry
-#grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=SERVER|g'
-cd ..

@@ -1,0 +1,24 @@
+#cloud-config
+write_files:
+  - path: /tmp/initialize.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "initialize.sh" >>
+  - path: /tmp/state
+    content: << V "state" >>
+
+coreos:
+  units:
+    - name: "initialize.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=Initializes the machine
+
+        [Service]
+        Type=oneshot
+        ExecStart=/tmp/initialize.sh -i
+
+        [Install]
+        WantedBy=multi-user.target

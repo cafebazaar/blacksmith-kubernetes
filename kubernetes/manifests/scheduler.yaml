@@ -11,5 +11,5 @@ spec:
     command:
     - /hyperkube
     - scheduler
-    - --master=http://${BLACKSMITH_MASTER_IP}:8080
+    - --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080
 

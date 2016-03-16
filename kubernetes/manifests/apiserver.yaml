@@ -12,12 +12,12 @@ spec:
     - /hyperkube
     - apiserver
     - --bind-address=0.0.0.0
-    - --insecure-bind-address=${BLACKSMITH_MASTER_IP}
-    - --etcd-servers=http://${BLACKSMITH_MASTER_IP}:4001,http://${BLACKSMITH_SECOND_IP}:4001,http://${BLACKSMITH_THIRD_IP}:4001
+    - --insecure-bind-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
+    - --etcd-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER2_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001
     - --allow-privileged=true
     - --service-cluster-ip-range=${SERVICE_IP_RANGE}
     - --secure-port=443
-    - --advertise-address=${BLACKSMITH_MASTER_IP}
+    - --advertise-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
     - --admission-control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
     - --tls-cert-file=${MASTER_CERT}
     - --tls-private-key-file=${MASTER_KEY}

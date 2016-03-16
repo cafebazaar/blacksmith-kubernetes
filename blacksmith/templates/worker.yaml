@@ -1,0 +1,11 @@
+#cloud-config
+coreos:
+
+  etcd2:
+    proxy: on
+    initial-cluster: etcd1=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:2380,etcd2=http://${BLACKSMITH_BOOTSTRAPPER2_IP}:2380,etcd3=http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380
+    listen-client-urls: http://127.0.0.1:2379,http://127.0.0.1:4001
+
+  units:
+<<template "common-units.yaml" .>>
+<<template "worker-units.yaml" .>>

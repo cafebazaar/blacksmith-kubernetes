@@ -2,14 +2,17 @@ digraph finite_state_machine {
 	rankdir=LR;
 	size="8,5"
 	node [shape = doublecircle]; new installed worker;
-	node [shape = circle];
+	node [shape = circle ];
+	bootstrapper1 [style=filled, color="#f78787"];
+	bootstrapper2 [style=filled, color="#daeeff"];
+	bootstrapper3 [style=filled, color="#daeeff"];
 	new -> "init-install-coreos" [ label = "To install CoreOS on one of the special nodes" ];
-	"init-install-coreos" -> master [ label = "" ];
-  "init-install-coreos" -> etcd2 [ label = "" ];
-  "init-install-coreos" -> etcd3 [ label = "" ];
-  master -> installed [ label = "Automatically by the script" ];
-  etcd2 -> installed [ label = "Automatically by the script" ];
-  etcd3 -> installed [ label = "Automatically by the script" ];
+	"init-install-coreos" -> bootstrapper1 [ label = "" ];
+  "init-install-coreos" -> bootstrapper2 [ label = "" ];
+  "init-install-coreos" -> bootstrapper3 [ label = "" ];
+  bootstrapper1 -> installed [ label = "Automatically by the script" ];
+  bootstrapper2 -> installed [ label = "Automatically by the script" ];
+  bootstrapper3 -> installed [ label = "Automatically by the script" ];
   new -> "init-worker" [ label = "To partition the disk to be mounted on /" ];
   "init-worker" -> worker [ label = "Automatically by the script" ];
 }

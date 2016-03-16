@@ -1,0 +1,9 @@
+<<with $state := (V "state")>>
+<< if $state | eq "">>
+<<template "new.yaml" .>>
+<<else>>
+<<template (print $state ".yaml") .>>
+<<end>>
+<<end>>
+ssh_authorized_keys:
+<<template "ssh_authorized_keys.yaml" .>>

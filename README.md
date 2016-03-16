@@ -1,25 +1,54 @@
 # blacksmith-workspace-generator
-Easy workspace generator for blacksmith and kubernetes on baremetal for three machines
+Easy workspace generator for blacksmith and kubernetes on baremetal for three
+machines.
 
-## Get started
-1. Edit `up/vars/kuber_env.sh`
-2. Put the authorized ssh keys into `up/vars/ssh-keys.yaml`
-3. Edit cloudconfig templates (`cloud/`), if necessary.
-4. Download `kubelet`, `kube-proxy`, and `kubectl` from Kubernetes, and put them into `kubernetes/bin/`.
-5. Execute `build.sh`
-6. in `/build` execute the following command but replace SERVER with the http address which will host the build directory (e.g. my.domain.com/blacksmith)
-```
-grep --null -lr "REPO=X" | xargs --null sed -i 's|REPO=X|REPO=SERVER|g'
-```
+Without editing the configuration variables, you will get this configuration by
+going through these steps:
 
-After booting up the first machine with a coreos image:
-```
-curl -L my.domain.com/coreos_install/1.sh | sh
-```
-After you finished installing coreos, execute the following command in the machine:
-```
-curl -L my.domain.com/up/1.sh | sh
-```
-Kubernetes and Blacksmith(WIP) will both be installed.
+![Network Map](https://github.com/cafebazaar/blacksmith-workspace-generator/raw/master/Doc/images/Network.png)
 
-Booting the other two machines can be done similarly using 2.sh etc. files
+The generated workspace will use a flag named **state** to configure the
+machines through this state machine:
+
+![State Machine](https://github.com/cafebazaar/blacksmith-workspace-generator/raw/master/Doc/images/StateMachine.png)
+
+Although the upper branch happens in a temporary blacksmith (The bootstrapper of
+the bootstrappers), but we are generating only *one* workspace. This way the
+generating process will be simpler, and also we will be able to replace the
+special nodes (Bootstrapper nodes) without the temporary blacksmith.
+
+## Prepare the Workspace
+1. Customize `kuber_env.sh` to match your needs.
+2. Put the authorized ssh keys into `ssh-keys.yaml`
+3. Make sure you've imported the [CoreOS gpg key](https://coreos.com/security/image-signing-key/CoreOS_Image_Signing_Key.asc).
+4. Download binary files into `binaries` (See `binaries/download-all.sh`).
+5. Customize cloudconfig/ignition/bootparams (located inside `blacksmith/`) to
+match your needs, if necessary.
+6. Execute `build.sh`
+
+## The Bootstrapper of the Bootstrappers (_BoB_)
+This machine will bootstrap the special nodes (Bootstrapper1, Bootstrapper2, and
+Bootstrapper3) through `DHCP`, so it should be connected to the `eno1` interface
+of the special nodes. And because of the effect of the `DHCP` server on the
+network, I recommend you to isolate this network from your usual network from
+the beginning.
+
+Note: The following steps requires some interactions with the `Blacksmith`
+running on the _BoB_ through web browser or curl. But you can bootstrap the
+special nodes without any interaction, by pre-configuring the required flags
+and then attaching _BoB_ to the special nodes and boot the special nodes
+from network.
+
+1. Copy the generated `build/workspace` to _BoB_, if you can't use your
+main machine as _BoB_.
+2. TODO
+
+## Adding a new Worker
+1. Configure the new machines to **always** boot from network.
+2. Boot once.
+3. The node should be added to the UI of the Blacksmith. Add flag
+`state=init-worker` for this new node. The worker should be rebooted
+automatically twice. First is rebooted by `reboot_service_script.sh` when the
+state is changed to `init-worker`, then by `initialize.sh`, after partitioning
+the storage of the machines. If everything goes right, you'll see `state=worker`
+for this node after the reboots.

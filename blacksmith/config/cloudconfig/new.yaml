@@ -1,0 +1,32 @@
+#cloud-config
+write_files:
+  - path: /tmp/initialize.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "initialize.sh" >>
+  - path: /tmp/state
+    content: << V "state" >>
+  - path: /tmp/reboot_service_script.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "reboot_service_script.sh" >>
+
+coreos:
+  units:
+    - name: etcd2.service
+      command: start
+    - name: etcd_reboot.service
+      command: start
+      content: |
+        [Unit]
+        Description=Reboots if the state of the machine is set to something starting with init
+        After=etcd2.service
+
+        [Service]
+        TimeoutStartSec=0
+        ExecStart=/usr/bin/bash /tmp/reboot_service_script.sh
+
+        [Install]
+        WantedBy=multi-user.target

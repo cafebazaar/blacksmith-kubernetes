@@ -1,0 +1,100 @@
+#cloud-config
+hostname: ${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME}
+coreos:
+  etcd2:
+    name: etcd1
+    advertise-client-urls: http://${BLACKSMITH_BOOTSTRAPPER1_IP}:2379,http://${BLACKSMITH_BOOTSTRAPPER1_IP}:4001
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    initial-advertise-peer-urls: http://${BLACKSMITH_BOOTSTRAPPER1_IP}:2380
+    listen-peer-urls: http://0.0.0.0:2380
+    initial-cluster: etcd1=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:2380,etcd2=http://${BLACKSMITH_BOOTSTRAPPER2_IP}:2380,etcd3=http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380
+    initial-cluster-state: new
+    cors: '*'
+
+  units:
+    ## Configure your network
+    - name: 00-${BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME}.network
+      runtime: true
+      content: |
+        [Match]
+        Name=${BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME}
+
+        [Network]
+        Address=${BLACKSMITH_BOOTSTRAPPER1_IP}/${INTERNAL_NETWORK_NETSIZE}
+        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
+        DNS=127.0.0.1
+        DNS=${EXTERNAL_DNS}
+    - name: 00-eno2.network
+      runtime: true
+      content: |
+        [Match]
+        Name=eno2
+
+        [Network]
+        Address=192.168.100.61
+
+<<template "common-units.yaml" .>>
+
+    - name: kube-kubelet.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Kubelet
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        # wait for kubernetes master to be up and ready
+        ExecStart=${BLACKSMITH_KUBELET_DIR}/kubelet \
+        --api-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080 \
+        --kubeconfig=${BLACKSMITH_KUBECONFIG_DIR}/config\
+        --config=${BLACKSMITH_MANIFESTS_DIR} \
+        --healthz-bind-address=0.0.0.0 \
+        --cluster-dns=10.100.0.10\
+        --cluster-domain=${CLUSTER_NAME}\
+        --healthz-port=10248\
+        --allow-privileged=true\
+        --logtostderr=true
+        Restart=always
+        RestartSec=10
+    - name: kube-proxy.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Proxy
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        ExecStart=${BLACKSMITH_KUBEPROXY_DIR}/kube-proxy \
+        --kubeconfig=${BLACKSMITH_KUBECONFIG_DIR}/config\
+        --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080\
+        --proxy-mode=iptables \
+        --logtostderr=true
+        Restart=always
+        RestartSec=10
+
+    - name: install-bootstrapper.service
+      command: start
+      content: |
+        [Unit]
+        Description=Initializes the machine
+
+        [Service]
+        Type=oneshot
+        ExecStart=/tmp/install-bootstrapper.sh ${BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME}
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: install-kubernetes-master.service
+      command: start
+      content: |
+        [Unit]
+        Description=Initializes the machine
+
+        [Service]
+        Type=oneshot
+        ExecStart=/tmp/install-kubernetes-master.sh
+
+        [Install]
+        WantedBy=multi-user.target
+
+write_files:
+<<template "bootstrap-files.yaml" .>>

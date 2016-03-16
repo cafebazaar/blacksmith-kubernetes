@@ -1,0 +1,10 @@
+  - path: /tmp/install-bootstrapper.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "install-bootstrapper.sh" >>
+  - path: /tmp/install-kubernetes-master.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "install-kubernetes-master.sh" >>
