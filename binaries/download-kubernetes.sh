@@ -6,4 +6,8 @@ die() {
   exit 1
 }
 
-curl -O https://storage.googleapis.com/kubernetes-release/release/v1.2.0-beta.1/bin/linux/amd64/kubectl || die "Failed while downloading the kubernetes binary"
+URL_PREFIX=https://storage.googleapis.com/kubernetes-release/release/v1.2.0-beta.1/bin/linux/amd64
+
+curl -O $URL_PREFIX/kubectl || die "Failed while downloading the kubernetes binary (kubectl)"
+curl -O $URL_PREFIX/kubelet || die "Failed while downloading the kubernetes binary (kubelet)"
+curl -O $URL_PREFIX/kube-proxy || die "Failed while downloading the kubernetes binary (kube-proxy)"

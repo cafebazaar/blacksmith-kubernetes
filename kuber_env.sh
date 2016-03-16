@@ -3,15 +3,6 @@
 
 export CLUSTER_NAME=cafecluster
 
-export BLACKSMITH_KUBECONFIG_DIR=/home/core/.kube
-
-export BLACKSMITH_ETCD_CLUSTER_TOKEN=local_kuber
-export BLACKSMITH_KUBELET_DIR=/opt/kubernetes/bin
-export BLACKSMITH_KUBECTL_DIR=/opt/kubernetes/bin
-export BLACKSMITH_MANIFESTS_DIR=/opt/kubernetes/manifests
-
-export BLACKSMITH_KUBEPROXY_DIR=/opt/kubernetes/bin
-
 export BLACKSMITH_BOOTSTRAPPER1_HOSTNAME=bootstrapper1
 export BLACKSMITH_BOOTSTRAPPER1_IP=192.168.64.11
 export BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME=eno1
@@ -35,7 +26,10 @@ export DNS_SERVICE_IP=10.100.0.10
 
 export MASTER_IP=$BLACKSMITH_BOOTSTRAPPER1_IP
 
-export CERT_ARGS=IP:10.100.0.1,IP:${MASTER_IP},DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME},DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME},DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.kubernetes.local
+# Random token
+export KUBERNETES_TOKEN=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+export CERT_ARGS=
 
 export USER=admin
 export CA_CERT=/srv/kubernetes/ca.crt
@@ -48,6 +42,6 @@ export CLI_CERT=/srv/kubernetes/kubecfg.crt
 export CLI_KEY=/srv/kubernetes/kubecfg.key
 export CONTEXT_NAME=default-context
 
-export BLACKSMITH_HYPERKUBE_IMAGE=colonelmo/hyperkube
+export BLACKSMITH_HYPERKUBE_IMAGE=quay.io/coreos/hyperkube:v1.1.8_coreos.0
 
 export KNOWN_TOKENS=/srv/kubernetes/known_tokens.csv

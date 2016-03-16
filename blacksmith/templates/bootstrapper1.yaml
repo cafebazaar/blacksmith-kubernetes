@@ -43,15 +43,15 @@ coreos:
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
         # wait for kubernetes master to be up and ready
-        ExecStart=${BLACKSMITH_KUBELET_DIR}/kubelet \
+        ExecStart=/opt/bin/kubelet \
         --api-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080 \
-        --kubeconfig=${BLACKSMITH_KUBECONFIG_DIR}/config\
-        --config=${BLACKSMITH_MANIFESTS_DIR} \
+        --kubeconfig=/home/core/.kube/config \
+        --config=/opt/kubernetes/manifests \
         --healthz-bind-address=0.0.0.0 \
-        --cluster-dns=10.100.0.10\
-        --cluster-domain=${CLUSTER_NAME}\
-        --healthz-port=10248\
-        --allow-privileged=true\
+        --cluster-dns=${DNS_SERVICE_IP} \
+        --cluster-domain=${CLUSTER_NAME} \
+        --healthz-port=10248 \
+        --allow-privileged=true \
         --logtostderr=true
         Restart=always
         RestartSec=10
@@ -62,9 +62,9 @@ coreos:
         Description=Kubernetes Proxy
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
-        ExecStart=${BLACKSMITH_KUBEPROXY_DIR}/kube-proxy \
-        --kubeconfig=${BLACKSMITH_KUBECONFIG_DIR}/config\
-        --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080\
+        ExecStart=/opt/bin/kube-proxy \
+        --kubeconfig=/home/core/.kube/config \
+        --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080 \
         --proxy-mode=iptables \
         --logtostderr=true
         Restart=always

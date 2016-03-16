@@ -38,6 +38,8 @@ function install_coreos {
 	mkdir -p "${WORKDIR}/rootfs/var/lib/blacksmith"
 	curl -L "http://<< .HostAddr >>/files/workspace.tar" -o ${WORKDIR}/workspace.tar
 	tar -C ${WORKDIR}/rootfs/var/lib/blacksmith/ xf ${WORKDIR}/workspace.tar
+	# To make it possible to reproduce special nodes without BoB. Be careful humans!
+	mv ${WORKDIR}/workspace.tar ${WORKDIR}/rootfs/var/lib/blacksmith/workspace/files/
 
   umount "${WORKDIR}/rootfs"
 	rm -rf "${WORKDIR}"

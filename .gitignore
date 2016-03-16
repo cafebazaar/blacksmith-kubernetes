@@ -1,3 +1,4 @@
 binaries/*
 !binaries/download-*.sh
-build
+/workspace
+/workspace.tar

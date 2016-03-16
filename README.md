@@ -20,10 +20,11 @@ special nodes (Bootstrapper nodes) without the temporary blacksmith.
 ## Prepare the Workspace
 1. Customize `kuber_env.sh` to match your needs.
 2. Put the authorized ssh keys into `ssh-keys.yaml`
-3. Make sure you've imported the [CoreOS gpg key](https://coreos.com/security/image-signing-key/CoreOS_Image_Signing_Key.asc).
+3. Make sure you've imported the [CoreOS gpg key](https://coreos.com/security/image-signing-key/).
 4. Download binary files into `binaries` (See `binaries/download-all.sh`).
 5. Customize cloudconfig/ignition/bootparams (located inside `blacksmith/`) to
 match your needs, if necessary.
+  1. For example,
 6. Execute `build.sh`
 
 ## The Bootstrapper of the Bootstrappers (_BoB_)
