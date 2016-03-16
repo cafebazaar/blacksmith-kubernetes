@@ -1,11 +1,11 @@
 #cloud-config
-hostname: bootstrapper2.${CLUSTER_NAME}
+hostname: bootstrapper3.${CLUSTER_NAME}
 coreos:
   etcd2:
-    name: etcd2
-    advertise-client-urls: http://${BLACKSMITH_BOOTSTRAPPER2_IP}:2379,http://${BLACKSMITH_BOOTSTRAPPER2_IP}:4001
+    name: etcd3
+    advertise-client-urls: http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2379,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
-    initial-advertise-peer-urls: http://${BLACKSMITH_BOOTSTRAPPER2_IP}:2380
+    initial-advertise-peer-urls: http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380
     listen-peer-urls: http://0.0.0.0:2380
     initial-cluster: etcd1=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:2380,etcd2=http://${BLACKSMITH_BOOTSTRAPPER2_IP}:2380,etcd3=http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380
     initial-cluster-state: new
@@ -13,14 +13,14 @@ coreos:
 
   units:
     ## Configure your network
-    - name: 00-${BLACKSMITH_BOOTSTRAPPER2_INTERNAL_INTERFACE_NAME}.network
+    - name: 00-${BLACKSMITH_BOOTSTRAPPER3_INTERNAL_INTERFACE_NAME}.network
       runtime: true
       content: |
         [Match]
-        Name=${BLACKSMITH_BOOTSTRAPPER2_INTERNAL_INTERFACE_NAME}
+        Name=${BLACKSMITH_BOOTSTRAPPER3_INTERNAL_INTERFACE_NAME}
 
         [Network]
-        Address=${BLACKSMITH_BOOTSTRAPPER2_IP}/${INTERNAL_NETWORK_NETSIZE}
+        Address=${BLACKSMITH_BOOTSTRAPPER3_IP}/${INTERNAL_NETWORK_NETSIZE}
         Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
         DNS=127.0.0.1
         DNS=${EXTERNAL_DNS}
@@ -31,7 +31,7 @@ coreos:
         Name=eno2
 
         [Network]
-        Address=192.168.100.62
+        Address=192.168.100.63
 
 <<template "common-units.yaml" .>>
 <<template "worker-units.yaml" .>>

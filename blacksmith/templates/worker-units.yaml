@@ -9,8 +9,8 @@
         ExecStartPre=/usr/bin/mkdir -p /opt/kubernetes/bin/
         ExecStartPre=/usr/bin/mkdir -p /opt/kubernetes/manifests/
         ExecStartPre=/usr/bin/mkdir -p /home/core/.kube/
-        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kubelet -z /opt/kubernetes/bin/kubelet http://${CURRENT_CLOUDCONFIG_SERVER_IP}:8000/${PATH_TO_KUBELET}
-        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://${CURRENT_CLOUDCONFIG_SERVER_IP}:8000/${PATH_TO_KUBE_CONFIG}
+        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://<< .HostAddr >>/files/kubeconfig
+        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kubelet -z /opt/kubernetes/bin/kubelet http://<< .HostAddr >>/files/kubelet
         ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kubelet
         ExecStart=/opt/kubernetes/bin/kubelet \
         --api-servers=http://${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME}:8080 \
@@ -34,8 +34,8 @@
         [Service]
         # wait for kubernetes master to be up and ready
         ExecStartPre=/usr/bin/mkdir -p /home/core/.kube/
-        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://${CURRENT_CLOUDCONFIG_SERVER_IP}:8000/${PATH_TO_KUBE_CONFIG}
-        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kube-proxy -z /opt/kubernetes/bin/kube-proxy http://${CURRENT_CLOUDCONFIG_SERVER_IP}:8000/${PATH_TO_KUBE_PROXY}
+        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kube-proxy -z /opt/kubernetes/bin/kube-proxy http://<< .HostAddr >>/files/kube-proxy
+        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://<< .HostAddr >>/files/kubeconfig
         ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kube-proxy
         ExecStart=/opt/kubernetes/bin/kube-proxy \
         --kubeconfig=/home/core/.kube/config \
