@@ -1,28 +1,29 @@
 #cloud-config
+<<with $ctx := .>>
 <<with $state := (V "state")>>
 << if $state | eq "" >>
-<<template "new.yaml" .>>
+<<template "new.yaml" $ctx>>
 
 << else if $state | eq "unknown" >>
-<<template "new.yaml" .>>
+<<template "new.yaml" $ctx>>
 
 << else if $state | eq "worker" >>
-<<template "worker.yaml" .>>
+<<template "worker.yaml" $ctx>>
 
 << else if $state | eq "init-worker" >>
-<<template "init-worker.yaml" .>>
+<<template "init-worker.yaml" $ctx>>
 
 << else if $state | eq "init-install-coreos" >>
-<<template "init-install-coreos.yaml" .>>
+<<template "init-install-coreos.yaml" $ctx>>
 
 << else if $state | eq "bootstrapper1" >>
-<<template "bootstrapper1.yaml" .>>
+<<template "bootstrapper1.yaml" $ctx>>
 
 << else if $state | eq "bootstrapper2" >>
-<<template "bootstrapper2.yaml" .>>
+<<template "bootstrapper2.yaml" $ctx>>
 
 << else if $state | eq "bootstrapper3" >>
-<<template "bootstrapper3.yaml" .>>
+<<template "bootstrapper3.yaml" $ctx>>
 
 << else >>
 write_files:
@@ -32,4 +33,5 @@ write_files:
 << end >>
 <<end>>
 ssh_authorized_keys:
-<<template "ssh_authorized_keys.yaml" .>>
+<<template "ssh_authorized_keys.yaml" $ctx>>
+<<end>>
