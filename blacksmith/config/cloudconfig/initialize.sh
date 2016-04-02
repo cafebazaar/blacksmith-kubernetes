@@ -20,7 +20,7 @@ function install_coreos {
 	curl -X PUT "http://<< .HostAddr >>/api/flag/state?mac=<< .Mac >>&value=<< V "desired-state" >>"
 	curl -L "http://<< .HostAddr >>/t/cc/<< .Mac >>" -o $WORKDIR/cloudconfig.yaml
 
-	coreos-install -c $WORKDIR/cloudconfig.yaml -d $DEVICE -b http://<< .HostAddr >>/images/
+	coreos-install -c $WORKDIR/cloudconfig.yaml -d $DEVICE -b http://<< .HostAddr >>/files/images
 
 	ROOT_DEV=$(blkid -t "LABEL=ROOT" -o device "${DEVICE}"*)
 

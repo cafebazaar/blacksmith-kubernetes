@@ -31,6 +31,11 @@ cp -r binaries/images workspace/
 cp binaries/initial.yaml workspace/
 cp -r blacksmith/config workspace/
 
+# For coreos-install
+cd workspace/files
+ln -s ../images ./images
+cd ../..
+
 cp ssh-keys.yaml workspace/config/cloudconfig/ssh_authorized_keys.yaml
 envsubst < blacksmith/templates/bootstrapper1.yaml > workspace/config/cloudconfig/bootstrapper1.yaml
 envsubst < blacksmith/templates/bootstrapper2.yaml > workspace/config/cloudconfig/bootstrapper2.yaml
