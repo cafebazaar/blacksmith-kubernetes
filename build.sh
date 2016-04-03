@@ -21,7 +21,7 @@ netmask() {
 export INTERNAL_NETWORK_NETMASK=$(netmask ${INTERNAL_NETWORK_NETSIZE})
 
 ## Clean
-rm -rf workspace
+rm -rf workspace/*
 
 
 ## Blacksmith Workspace
