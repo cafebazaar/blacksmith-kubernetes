@@ -1,7 +1,5 @@
 #!/usr/bin/bash
-# TODO: use blacksmith values
-node_name=$(hostname -s)
-cluster_name=$(hostname -d)
+IFS=. read node_name cluster_name <<< $(hostname)
 
 state_key=/$cluster_name/machines/$node_name/state
 
