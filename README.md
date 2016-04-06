@@ -42,14 +42,23 @@ from network.
 
 1. Copy the generated `build/workspace` to _BoB_, if you can't use your
 main machine as _BoB_.
-2. TODO
+2. Start the machines from
 
 ## Adding a new Worker
 1. Configure the new machines to **always** boot from network.
 2. Boot once.
 3. The node should be added to the UI of the Blacksmith. Add flag
-`state=init-worker` for this new node. The worker should be rebooted
-automatically twice. First is rebooted by `reboot_service_script.sh` when the
-state is changed to `init-worker`, then by `initialize.sh`, after partitioning
-the storage of the machines. If everything goes right, you'll see `state=worker`
-for this node after the reboots.
+`state=init-worker` for this new node, and boot the machine. The worker should
+be rebooted automatically after the initialization is completed. First is
+rebooted by `reboot_service_script.sh` when the state is changed to
+`init-worker`, then by `initialize.sh`, after partitioning the storage of the
+machines. If everything goes right, you'll see `state=worker` for this node
+after the reboots.
+
+## Working with the Kubernetes cluster
+After executing `buidl.sh`, two files will be added to the root this project:
+
+* `kubeconfig`
+* `ca.key`
+
+TODO: kubectl create '{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"kube-system"}}'

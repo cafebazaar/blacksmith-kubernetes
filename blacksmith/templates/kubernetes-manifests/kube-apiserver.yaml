@@ -12,17 +12,17 @@ spec:
     - /hyperkube
     - apiserver
     - --bind-address=0.0.0.0
-    - --insecure-bind-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
     - --etcd-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER2_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001
     - --allow-privileged=true
     - --service-cluster-ip-range=${SERVICE_IP_RANGE}
     - --secure-port=443
     - --advertise-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
     - --admission-control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
-    - --tls-cert-file=${MASTER_CERT}
-    - --tls-private-key-file=${MASTER_KEY}
-    - --client-ca-file=${CA_CERT}
-    - --token-auth-file=${KNOWN_TOKENS}
+    - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
+    - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+    - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+#    - --insecure-bind-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
     ports:
     - containerPort: 443
       hostPort: 443
@@ -31,16 +31,16 @@ spec:
       hostPort: 8080
       name: local
     volumeMounts:
-    - mountPath: /srv/kubernetes
-      name: srvkube
+    - mountPath: /etc/kubernetes/ssl
+      name: ssl-certs-kubernetes
       readOnly: true
-    - mountPath: /etc/ssl
-      name: etcssl
+    - mountPath: /etc/ssl/certs
+      name: ssl-certs-host
       readOnly: true
   volumes:
   - hostPath:
-      path: /srv/kubernetes
-    name: srvkube
+      path: /etc/kubernetes/ssl
+    name: ssl-certs-kubernetes
   - hostPath:
-      path: /etc/ssl
-    name: etcssl
+      path: /usr/share/ca-certificates
+    name: ssl-certs-host

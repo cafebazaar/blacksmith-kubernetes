@@ -2,3 +2,5 @@ binaries/*
 !binaries/download-*.sh
 /workspace
 /workspace.tar
+/ca.key
+/kubeconfig

@@ -1,3 +1,16 @@
+write_files:
+  - path: /etc/kubernetes/worker-kubeconfig.yaml
+    encoding: "base64"
+    permissions: "0644"
+    owner: "root"
+    content: << b64template "worker-kubeconfig.yaml" >>
+
+  - path: /etc/kubernetes/manifests/kube-proxy-worker.yaml
+    encoding: "base64"
+    permissions: "0644"
+    owner: "root"
+    content: << b64template "kube-proxy-worker.yaml" >>
+
 coreos:
 
   etcd2:

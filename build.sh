@@ -20,11 +20,13 @@ netmask() {
 
 export INTERNAL_NETWORK_NETMASK=$(netmask ${INTERNAL_NETWORK_NETSIZE})
 
-## Clean
+project_root=$(pwd)
+
+#### Clean ###################################################################
 rm -rf workspace/*
 
 
-## Blacksmith Workspace
+#### BoB Workspace ###########################################################
 mkdir -p workspace/files
 
 cp -r binaries/images workspace/
@@ -42,53 +44,61 @@ envsubst < blacksmith/templates/bootstrapper2.yaml > workspace/config/cloudconfi
 envsubst < blacksmith/templates/bootstrapper3.yaml > workspace/config/cloudconfig/bootstrapper3.yaml
 envsubst < blacksmith/templates/common-units.yaml > workspace/config/cloudconfig/common-units.yaml
 envsubst < blacksmith/templates/install-bootstrapper.sh > workspace/config/cloudconfig/install-bootstrapper.sh
-envsubst < blacksmith/templates/install-kubernetes-master.sh > workspace/config/cloudconfig/install-kubernetes-master.sh
 envsubst < blacksmith/templates/worker-units.yaml > workspace/config/cloudconfig/worker-units.yaml
 envsubst < blacksmith/templates/worker.yaml > workspace/config/cloudconfig/worker.yaml
 
-## Certificates
-extra_sans=${CERT_ARGS:-}
-cert_dir=$(pwd)/workspace/kubernetes/certs
+envsubst < blacksmith/templates/kubernetes-manifests/kube-apiserver.yaml > workspace/config/cloudconfig/kube-apiserver.yaml
+envsubst < blacksmith/templates/kubernetes-manifests/kube-controller-manager.yaml > workspace/config/cloudconfig/kube-controller-manager.yaml
+envsubst < blacksmith/templates/kubernetes-manifests/kube-proxy.yaml > workspace/config/cloudconfig/kube-proxy.yaml
+envsubst < blacksmith/templates/kubernetes-manifests/kube-proxy-worker.yaml > workspace/config/cloudconfig/kube-proxy-worker.yaml
+envsubst < blacksmith/templates/kubernetes-manifests/kube-scheduler.yaml > workspace/config/cloudconfig/kube-scheduler.yaml
 
-mkdir -p "$cert_dir"
-use_cn=false
+#### Certificates ############################################################
+extra_sans=${CERT_ARGS:-}
+cert_dir=$project_root/workspace/config/cloudconfig
 
 sans="IP:${BLACKSMITH_BOOTSTRAPPER1_IP},IP:10.100.0.1,DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME},DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME},DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.kubernetes.local"
 if [[ -n "${extra_sans}" ]]; then
   sans="${sans},${extra_sans}"
 fi
 
-previous=$(pwd)
 cd binaries/easy-rsa-master/easyrsa3
 
 rm -r pki || echo "Not Fatal"
 ./easyrsa init-pki
 
+# CA
 ./easyrsa --batch "--req-cn=$BLACKSMITH_BOOTSTRAPPER1_IP@`date +%s`" build-ca nopass
-
-./easyrsa --subject-alt-name="${sans}" build-server-full kubernetes-master nopass
-./easyrsa build-client-full kubelet nopass
-./easyrsa build-client-full kubecfg nopass
-
-cp -p pki/issued/kubernetes-master.crt "${cert_dir}/server.cert"
-cp -p pki/private/kubernetes-master.key "${cert_dir}/server.key"
 cp -p pki/ca.crt "${cert_dir}/ca.crt"
-cp -p pki/issued/kubecfg.crt "${cert_dir}/kubecfg.crt"
-cp -p pki/private/kubecfg.key "${cert_dir}/kubecfg.key"
-cp -p pki/issued/kubelet.crt "${cert_dir}/kubelet.crt"
-cp -p pki/private/kubelet.key "${cert_dir}/kubelet.key"
-cp -p pki/issued/kubecfg.crt "${cert_dir}/kubecfg.crt"
-cp -p pki/private/kubecfg.key "${cert_dir}/kubecfg.key"
-echo $TOKEN,admin,admin > "${cert_dir}/known_tokens.csv"
+cp -p pki/ca.key "${project_root}/ca.key"
 
-cd $previous
-mkdir workspace/kubernetes/manifests
-envsubst < kubernetes-manifests/apiserver.yaml > workspace/kubernetes/manifests/apiserver.yaml
-envsubst < kubernetes-manifests/controller.yaml > workspace/kubernetes/manifests/controller.yaml
-envsubst < kubernetes-manifests/scheduler.yaml > workspace/kubernetes/manifests/scheduler.yaml
+# Master
+./easyrsa --subject-alt-name="${sans}" build-server-full kubernetes-master nopass
+cp -p pki/issued/kubernetes-master.crt "${cert_dir}/apiserver.pem"
+cp -p pki/private/kubernetes-master.key "${cert_dir}/apiserver-key.pem"
 
-cp binaries/kubectl workspace/files/
-cp binaries/kubelet workspace/files/
-cp binaries/kube-proxy workspace/files/
+# Machines
+./easyrsa build-client-full machine nopass
+
+# Admin
+./easyrsa build-client-full admin nopass
+
+cd $project_root
+
+# Creating kube config for machines
+./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml set-cluster $CLUSTER_NAME --certificate-authority=binaries/easy-rsa-master/easyrsa3/pki/ca.crt --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
+./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml set-credentials machine --client-certificate=binaries/easy-rsa-master/easyrsa3/pki/issued/machine.crt --client-key=binaries/easy-rsa-master/easyrsa3/pki/private/machine.key --embed-certs=true
+./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
+./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml use-context $CONTEXT_NAME
+
+# Creating kube config for admin
+./binaries/kubectl config --kubeconfig ./kubeconfig set-cluster $CLUSTER_NAME --certificate-authority=binaries/easy-rsa-master/easyrsa3/pki/ca.crt --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
+./binaries/kubectl config --kubeconfig ./kubeconfig set-credentials admin --client-certificate=binaries/easy-rsa-master/easyrsa3/pki/issued/admin.crt --client-key=binaries/easy-rsa-master/easyrsa3/pki/private/admin.key --embed-certs=true
+./binaries/kubectl config --kubeconfig ./kubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=admin
+./binaries/kubectl config --kubeconfig ./kubeconfig use-context $CONTEXT_NAME
 
 tar -cf workspace.tar workspace
+
+echo "========================================================================="
+echo
+echo "TODO"

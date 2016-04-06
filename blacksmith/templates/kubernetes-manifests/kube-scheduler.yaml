@@ -11,5 +11,11 @@ spec:
     command:
     - /hyperkube
     - scheduler
-    - --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080
-
+    - --master=http://127.0.0.1:8080
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10251
+      initialDelaySeconds: 15
+      timeoutSeconds: 1

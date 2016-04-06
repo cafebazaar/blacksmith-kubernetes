@@ -1,44 +1,21 @@
 
-    - name: kube-kubelet.service
+    - name: kubelet.service
       command: start
       content: |
         [Unit]
         Description=Kubernetes Kubelet
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
-        ExecStartPre=/usr/bin/mkdir -p /opt/kubernetes/bin/
-        ExecStartPre=/usr/bin/mkdir -p /opt/kubernetes/manifests/
-        ExecStartPre=/usr/bin/mkdir -p /home/core/.kube/
-        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://<< .HostAddr >>/files/kubeconfig
-        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kubelet -z /opt/kubernetes/bin/kubelet http://<< .HostAddr >>/files/kubelet
-        ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kubelet
-        ExecStart=/opt/kubernetes/bin/kubelet \
-        --api-servers=http://${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME}:8080 \
-        --kubeconfig=/home/core/.kube/config \
-        --config=/opt/kubernetes/manifests/ \
-        --healthz-bind-address=0.0.0.0 \
-        --cluster-dns=${DNS_SERVICE_IP}\
-        --cluster-domain=cluster.local\
-        --healthz-port=10248\
-        --allow-privileged=true\
-        --logtostderr=true
+        Environment=KUBELET_VERSION=${K8S_VER}
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+          --api-servers=https://${BLACKSMITH_BOOTSTRAPPER1_IP} \
+          --register-node=false \
+          --allow-privileged=true \
+          --config=/etc/kubernetes/manifests \
+          --cluster-dns=${DNS_SERVICE_IP} \
+          --cluster-domain=${CLUSTER_NAME} \
+          --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
         Restart=always
         RestartSec=10
-
-    - name: kube-proxy.service
-      command: start
-      content: |
-        [Unit]
-        Description=Kubernetes Proxy
-        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        [Service]
-        # wait for kubernetes master to be up and ready
-        ExecStartPre=/usr/bin/mkdir -p /home/core/.kube/
-        ExecStartPre=/usr/bin/curl -L -o /opt/kubernetes/bin/kube-proxy -z /opt/kubernetes/bin/kube-proxy http://<< .HostAddr >>/files/kube-proxy
-        ExecStartPre=/usr/bin/curl -L -o /home/core/.kube/config -z /home/core/.kube/config http://<< .HostAddr >>/files/kubeconfig
-        ExecStartPre=/usr/bin/chmod +x /opt/kubernetes/bin/kube-proxy
-        ExecStart=/opt/kubernetes/bin/kube-proxy \
-        --kubeconfig=/home/core/.kube/config \
-        --logtostderr=true
-        Restart=always
-        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target

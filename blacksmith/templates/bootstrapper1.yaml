@@ -34,40 +34,25 @@ coreos:
 
 <<template "common-units.yaml" .>>
 
-    - name: kube-kubelet.service
+    - name: kubelet.service
       command: start
       content: |
         [Unit]
         Description=Kubernetes Kubelet
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
-        # wait for kubernetes master to be up and ready
-        ExecStart=/opt/bin/kubelet \
-        --api-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080 \
-        --kubeconfig=/home/core/.kube/config \
-        --config=/opt/kubernetes/manifests \
-        --healthz-bind-address=0.0.0.0 \
-        --cluster-dns=${DNS_SERVICE_IP} \
-        --cluster-domain=${CLUSTER_NAME} \
-        --healthz-port=10248 \
-        --allow-privileged=true \
-        --logtostderr=true
+        Environment=KUBELET_VERSION=${K8S_VER}
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+          --api-servers=http://127.0.0.1:8080 \
+          --register-node=false \
+          --allow-privileged=true \
+          --config=/etc/kubernetes/manifests \
+          --cluster-dns=${DNS_SERVICE_IP} \
+          --cluster-domain=${CLUSTER_NAME}
         Restart=always
         RestartSec=10
-    - name: kube-proxy.service
-      command: start
-      content: |
-        [Unit]
-        Description=Kubernetes Proxy
-        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        [Service]
-        ExecStart=/opt/bin/kube-proxy \
-        --kubeconfig=/home/core/.kube/config \
-        --master=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:8080 \
-        --proxy-mode=iptables \
-        --logtostderr=true
-        Restart=always
-        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target
 
     - name: install-bootstrapper.service
       command: start
@@ -82,18 +67,46 @@ coreos:
         [Install]
         WantedBy=multi-user.target
 
-    - name: install-kubernetes-master.service
-      command: start
-      content: |
-        [Unit]
-        Description=Initializes the machine
-
-        [Service]
-        Type=oneshot
-        ExecStart=/tmp/install-kubernetes-master.sh
-
-        [Install]
-        WantedBy=multi-user.target
-
 write_files:
 <<template "bootstrap-files.yaml" .>>
+  - path: /etc/kubernetes/ssl/ca.pem
+    encoding: "base64"
+    permissions: "0444"
+    owner: "root"
+    content: << b64template "ca.pem" >>
+
+  - path: /etc/kubernetes/ssl/apiserver.pem
+    encoding: "base64"
+    permissions: "0444"
+    owner: "root"
+    content: << b64template "apiserver.pem" >>
+
+  - path: /etc/kubernetes/ssl/apiserver-key.pem
+    encoding: "base64"
+    permissions: "0400"
+    owner: "root"
+    content: << b64template "apiserver-key.pem" >>
+
+  - path: /etc/kubernetes/manifests/kube-apiserver.yaml
+    encoding: "base64"
+    permissions: "0644"
+    owner: "root"
+    content: << b64template "kube-apiserver.yaml" >>
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yaml
+    encoding: "base64"
+    permissions: "0644"
+    owner: "root"
+    content: << b64template "kube-proxy.yaml" >>
+
+  - path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    encoding: "base64"
+    permissions: "0644"
+    owner: "root"
+    content: << b64template "kube-controller-manager.yaml" >>
+
+  - path: /etc/kubernetes/manifests/kube-scheduler.yaml
+    encoding: "base64"
+    permissions: "0644"
+    owner: "root"
+    content: << b64template "kube-scheduler.yaml" >>

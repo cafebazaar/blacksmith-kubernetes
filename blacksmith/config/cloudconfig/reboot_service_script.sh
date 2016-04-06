@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-IFS=. read node_name cluster_name <<< $(hostname)
+IFS=. read node_name cluster_name << "<<<" >> $(hostname)
 
 state_key=/$cluster_name/machines/$node_name/state
 
