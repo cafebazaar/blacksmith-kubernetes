@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Variables are injected from this configuration file:
 export DOLLAR='$'
@@ -24,7 +25,7 @@ project_root=$(pwd)
 
 #### Clean ###################################################################
 rm -rf workspace/*
-
+rm -rf Takeaways/*
 
 #### BoB Workspace ###########################################################
 mkdir -p workspace/files
@@ -62,15 +63,15 @@ if [[ -n "${extra_sans}" ]]; then
   sans="${sans},${extra_sans}"
 fi
 
-cd binaries/easy-rsa-master/easyrsa3
+easyrsa3_dir=$project_root/binaries/easy-rsa-master/easyrsa3
+cd $easyrsa3_dir
 
 rm -r pki || echo "Not Fatal"
 ./easyrsa init-pki
 
 # CA
 ./easyrsa --batch "--req-cn=$BLACKSMITH_BOOTSTRAPPER1_IP@`date +%s`" build-ca nopass
-cp -p pki/ca.crt "${cert_dir}/ca.crt"
-cp -p pki/ca.key "${project_root}/ca.key"
+cp -p pki/ca.crt ${cert_dir}/ca.pem
 
 # Master
 ./easyrsa --subject-alt-name="${sans}" build-server-full kubernetes-master nopass
@@ -83,22 +84,33 @@ cp -p pki/private/kubernetes-master.key "${cert_dir}/apiserver-key.pem"
 # Admin
 ./easyrsa build-client-full admin nopass
 
+mkdir -p $project_root/Takeaways
+cp -p $easyrsa3_dir/pki/ca.crt $project_root/Takeaways/ca.pem
+cp -p $easyrsa3_dir/pki/private/ca.key $project_root/Takeaways/ca.key
+
 cd $project_root
 
 # Creating kube config for machines
-./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml set-cluster $CLUSTER_NAME --certificate-authority=binaries/easy-rsa-master/easyrsa3/pki/ca.crt --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
-./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml set-credentials machine --client-certificate=binaries/easy-rsa-master/easyrsa3/pki/issued/machine.crt --client-key=binaries/easy-rsa-master/easyrsa3/pki/private/machine.key --embed-certs=true
-./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
-./binaries/kubectl config --kubeconfig workspace/config/cloudconfig/worker-kubeconfig.yaml use-context $CONTEXT_NAME
+wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
+./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
+./binaries/kubectl config --kubeconfig $wkubeconfig set-credentials machine --client-certificate=$easyrsa3_dir/pki/issued/machine.crt --client-key=$easyrsa3_dir/pki/private/machine.key --embed-certs=true
+./binaries/kubectl config --kubeconfig $wkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
+./binaries/kubectl config --kubeconfig $wkubeconfig use-context $CONTEXT_NAME
 
 # Creating kube config for admin
-./binaries/kubectl config --kubeconfig ./kubeconfig set-cluster $CLUSTER_NAME --certificate-authority=binaries/easy-rsa-master/easyrsa3/pki/ca.crt --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
-./binaries/kubectl config --kubeconfig ./kubeconfig set-credentials admin --client-certificate=binaries/easy-rsa-master/easyrsa3/pki/issued/admin.crt --client-key=binaries/easy-rsa-master/easyrsa3/pki/private/admin.key --embed-certs=true
-./binaries/kubectl config --kubeconfig ./kubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=admin
-./binaries/kubectl config --kubeconfig ./kubeconfig use-context $CONTEXT_NAME
+lkubeconfig=Takeaways/kubeconfig
+./binaries/kubectl config --kubeconfig $lkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
+./binaries/kubectl config --kubeconfig $lkubeconfig set-credentials admin --client-certificate=$easyrsa3_dir/pki/issued/admin.crt --client-key=$easyrsa3_dir/pki/private/admin.key --embed-certs=true
+./binaries/kubectl config --kubeconfig $lkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=admin
+./binaries/kubectl config --kubeconfig $lkubeconfig use-context $CONTEXT_NAME
 
+# We need a Blacksmith-to-Blacksmith sync mechanism
+# Hack for now:
 tar -cf workspace.tar workspace
+mv workspace.tar workspace/files/
 
+echo
 echo "========================================================================="
 echo
-echo "TODO"
+cat README.md
+echo

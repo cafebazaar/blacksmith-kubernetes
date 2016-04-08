@@ -1,6 +1,10 @@
 # blacksmith-workspace-generator
-Easy workspace generator for blacksmith and kubernetes on baremetal for three
-machines.
+Easy workspace generator for [blacksmith] to configure a [kubernetes] cluster,
+according to [CoreOS + Kubernetes Step By Step guide][k8sguide].
+
+[blacksmith]: https://github.com/cafebazaar/blacksmith
+[kubernetes]: http://kubernetes.io/
+[k8sguide]: https://coreos.com/kubernetes/docs/latest/getting-started.html
 
 Without editing the configuration variables, you will get this configuration by
 going through these steps:
@@ -40,9 +44,10 @@ special nodes without any interaction, by pre-configuring the required flags
 and then attaching _BoB_ to the special nodes and boot the special nodes
 from network.
 
-1. Copy the generated `build/workspace` to _BoB_, if you can't use your
+1. Copy the generated `workspace` to _BoB_, if you can't use your
 main machine as _BoB_.
 2. Start the machines from
+3. Copy
 
 ## Adding a new Worker
 1. Configure the new machines to **always** boot from network.
@@ -56,9 +61,10 @@ machines. If everything goes right, you'll see `state=worker` for this node
 after the reboots.
 
 ## Working with the Kubernetes cluster
-After executing `buidl.sh`, two files will be added to the root this project:
+`buidl.sh` generate these files as the takeaways:
 
-* `kubeconfig`
-* `ca.key`
+* `Takeaways/kubeconfig`
+* `Takeaways/ca.pem`
+* `Takeaways/ca.key`
 
 TODO: kubectl create '{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"kube-system"}}'
