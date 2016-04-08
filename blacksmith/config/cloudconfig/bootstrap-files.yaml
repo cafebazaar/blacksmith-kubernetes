@@ -2,7 +2,7 @@
     encoding: "base64"
     permissions: "0400"
     owner: "root"
-    content: << b64template "kubeconfig" >>
+    content: << b64template "worker-kubeconfig.yaml" >>
 
   - path: /tmp/install-bootstrapper.sh
     encoding: "base64"
