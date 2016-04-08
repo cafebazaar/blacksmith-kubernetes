@@ -30,6 +30,7 @@ function install_coreos {
 	fi
 
 	mkdir -p "${WORKDIR}/rootfs"
+	echo "Mounting the fs ${ROOT_DEV}"
 	case $(blkid -t "LABEL=ROOT" -o value -s TYPE "${ROOT_DEV}") in
 		"btrfs") mount -t btrfs -o subvol=root "${ROOT_DEV}" "${WORKDIR}/rootfs" ;;
 		*)       mount "${ROOT_DEV}" "${WORKDIR}/rootfs" ;;
@@ -37,10 +38,11 @@ function install_coreos {
 	trap "umount '${WORKDIR}/rootfs' && rm -rf '${WORKDIR}'" EXIT
 	mkdir -p "${WORKDIR}/rootfs/var/lib/blacksmith"
 	curl -L "http://<< .HostAddr >>/files/workspace.tar" -o ${WORKDIR}/workspace.tar
-	tar -C ${WORKDIR}/rootfs/var/lib/blacksmith/ xf ${WORKDIR}/workspace.tar
+	tar -C ${WORKDIR}/rootfs/var/lib/blacksmith/ -xf ${WORKDIR}/workspace.tar || echo "Failed to untar the workspace file"
 	# To make it possible to reproduce special nodes without BoB. Be careful humans!
 	mv ${WORKDIR}/workspace.tar ${WORKDIR}/rootfs/var/lib/blacksmith/workspace/files/
 
+	echo "Umounting the fs"
   umount "${WORKDIR}/rootfs"
 	rm -rf "${WORKDIR}"
   trap - EXIT
