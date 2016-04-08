@@ -32,6 +32,21 @@ coreos:
         [Network]
         Address=192.168.100.62
 
+    - name: install-bootstrapper.service
+      command: start
+      content: |
+        [Unit]
+        Description=Initializes the machine
+        Requires=early-docker.service
+        After=etcd.service etcd2.service early-docker.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/tmp/install-bootstrapper.sh ${BLACKSMITH_BOOTSTRAPPER2_INTERNAL_INTERFACE_NAME}
+
+        [Install]
+        WantedBy=multi-user.target
+
 <<template "common-units.yaml" .>>
 <<template "worker-units.yaml" .>>
 
