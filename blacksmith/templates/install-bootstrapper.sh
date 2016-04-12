@@ -7,6 +7,9 @@ if [[ $(docker -H unix:///var/run/early-docker.sock inspect blacksmith) == "[]" 
   docker -H unix:///var/run/early-docker.sock run --name blacksmith --restart=always -d --net=host ${DOLLAR}VOLUME_ARGS cafebazaar/blacksmith ${DOLLAR}ARGS
 fi
 
+###############################################################################
+## Begin: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
+
 # wait for blacksmith to be ready
 sleep 10
 
@@ -30,7 +33,10 @@ then
   etcdctl set "/skydns/${cluster_name}/${node_name}" "{\"host\":\"$current_node_ip\"}"
 fi
 
+## End: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
+###############################################################################
+
 ## Installing SkyDNS
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect skydns) == "[]" ]]; then
-  docker -H unix:///var/run/early-docker.sock run --name skydns --restart=always -d -p 0.0.0.0:53:53/udp -e ETCD_MACHINES=http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 skynetservices/skydns
+  docker -H unix:///var/run/early-docker.sock run --name skydns --restart=always -d --net=host -e ETCD_MACHINES=http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 skynetservices/skydns
 fi
