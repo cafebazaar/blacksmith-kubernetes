@@ -1,4 +1,4 @@
-hostname: bootstrapper2.${CLUSTER_NAME}
+hostname: ${BLACKSMITH_BOOTSTRAPPER2_HOSTNAME}.${CLUSTER_NAME}
 coreos:
   etcd2:
     name: etcd2
