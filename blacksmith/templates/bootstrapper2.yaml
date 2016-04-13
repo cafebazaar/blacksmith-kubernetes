@@ -21,7 +21,7 @@ coreos:
         [Network]
         Address=${BLACKSMITH_BOOTSTRAPPER2_IP}/${INTERNAL_NETWORK_NETSIZE}
         Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
-        DNS=127.0.0.1
+        DNS=${BLACKSMITH_BOOTSTRAPPER2_IP}
         DNS=${EXTERNAL_DNS}
     - name: 00-eno2.network
       runtime: true

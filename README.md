@@ -67,4 +67,7 @@ after the reboots.
 * `Takeaways/ca.pem`
 * `Takeaways/ca.key`
 
-TODO: kubectl create '{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"kube-system"}}'
+TODO: on Bootstrapper1:
+```
+curl -H "Content-Type: application/json" -XPOST -d'{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"kube-system"}}' "http://127.0.0.1:8080/api/v1/namespaces"
+```

@@ -21,7 +21,7 @@ coreos:
         [Network]
         Address=${BLACKSMITH_BOOTSTRAPPER1_IP}/${INTERNAL_NETWORK_NETSIZE}
         Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
-        DNS=127.0.0.1
+        DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
         DNS=${EXTERNAL_DNS}
     - name: 00-eno2.network
       runtime: true
@@ -42,6 +42,7 @@ coreos:
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
         Environment=KUBELET_VERSION=${K8S_VER}
+        Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf "
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
           --api-servers=http://127.0.0.1:8080 \
           --register-node=false \

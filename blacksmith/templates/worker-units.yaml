@@ -7,6 +7,7 @@
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
         Environment=KUBELET_VERSION=${K8S_VER}
+        Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf "
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
           --api-servers=https://${BLACKSMITH_BOOTSTRAPPER1_IP} \
           --register-node=false \

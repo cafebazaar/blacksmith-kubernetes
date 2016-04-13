@@ -9,7 +9,7 @@ if [[ $(docker -H unix:///var/run/early-docker.sock inspect blacksmith) == "[]" 
 fi
 
 # Wait for blacksmith to be ready
-sleep 30
+sleep 60
 
 ###############################################################################
 ## Begin: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
@@ -20,6 +20,9 @@ etcdctl set "/skydns/${CLUSTER_NAME}/${BLACKSMITH_BOOTSTRAPPER3_HOSTNAME}" "{\"h
 
 ## End: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
 ###############################################################################
+
+# Wait for ???
+sleep 60
 
 ## Installing SkyDNS
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect skydns) == "[]" ]]; then
