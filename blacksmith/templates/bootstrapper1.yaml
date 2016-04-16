@@ -71,7 +71,6 @@ coreos:
         WantedBy=multi-user.target
 
 write_files:
-<<template "bootstrap-files.yaml" .>>
   - path: /etc/kubernetes/ssl/ca.pem
     encoding: "base64"
     permissions: "0444"
@@ -113,3 +112,9 @@ write_files:
     permissions: "0644"
     owner: "root"
     content: << b64template "kube-scheduler.yaml" >>
+
+  - path: /tmp/install-bootstrapper.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "install-bootstrapper.sh" >>

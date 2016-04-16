@@ -51,4 +51,10 @@ coreos:
 <<template "worker-units.yaml" .>>
 
 write_files:
-<<template "bootstrap-files.yaml" .>>
+<<template "worker-files.yaml" .>>
+
+  - path: /tmp/install-bootstrapper.sh
+    encoding: "base64"
+    permissions: "0744"
+    owner: "root"
+    content: << b64template "install-bootstrapper.sh" >>

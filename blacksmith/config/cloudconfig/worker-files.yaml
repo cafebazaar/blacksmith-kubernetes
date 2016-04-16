@@ -1,11 +1,11 @@
   - path: /etc/kubernetes/worker-kubeconfig.yaml
     encoding: "base64"
-    permissions: "0400"
+    permissions: "0644"
     owner: "root"
     content: << b64template "worker-kubeconfig.yaml" >>
 
-  - path: /tmp/install-bootstrapper.sh
+  - path: /etc/kubernetes/manifests/kube-proxy-worker.yaml
     encoding: "base64"
-    permissions: "0744"
+    permissions: "0644"
     owner: "root"
-    content: << b64template "install-bootstrapper.sh" >>
+    content: << b64template "kube-proxy-worker.yaml" >>
