@@ -11,8 +11,8 @@ spec:
     command:
     - /hyperkube
     - proxy
-    - --api-servers=https://${BLACKSMITH_BOOTSTRAPPER1_IP} \
-    - --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
+    - --master=https://${BLACKSMITH_BOOTSTRAPPER1_IP}
+    - --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
     - --proxy-mode=iptables
     securityContext:
       privileged: true

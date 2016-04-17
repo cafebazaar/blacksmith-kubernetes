@@ -45,7 +45,7 @@ coreos:
         Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf "
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
           --api-servers=http://127.0.0.1:8080 \
-          --register-node=false \
+          --register-schedulable=false \
           --allow-privileged=true \
           --config=/etc/kubernetes/manifests \
           --cluster-dns=${DNS_SERVICE_IP} \
