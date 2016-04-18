@@ -103,7 +103,7 @@ wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
 mkdir -p $project_root/Takeaways
 cp -p $easyrsa3_dir/pki/ca.crt Takeaways/ca.pem
 cp -p $easyrsa3_dir/pki/private/ca.key Takeaways/ca.key
-# envsubst < after-deploy/dns-addon.yml > Takeaways/dns-addon.yml
+envsubst < after-deploy/dns-addon.yml > Takeaways/dns-addon.yml
 
 # Creating kube config for admin
 lkubeconfig=Takeaways/kubeconfig
