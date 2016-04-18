@@ -25,7 +25,7 @@ project_root=$(pwd)
 
 #### Clean ###################################################################
 rm -rf workspace/*
-rm -rf Takeaways/*
+rm -rf Takeaways
 
 #### BoB Workspace ###########################################################
 mkdir -p workspace/files
@@ -64,31 +64,33 @@ if [[ -n "${extra_sans}" ]]; then
 fi
 
 easyrsa3_dir=$project_root/binaries/easy-rsa-master/easyrsa3
-cd $easyrsa3_dir
 
-rm -r pki || echo "Not Fatal"
-./easyrsa init-pki
+if [ -d "$easyrsa3_dir/pki" ]; then
+  echo
+  echo "Skipping the key/certificate generation part."
+  echo "There's already a pki folder inside $easyrsa3_dir"
+  echo
+else
+  cd $easyrsa3_dir
+  ./easyrsa init-pki
 
-# CA
-./easyrsa --batch "--req-cn=$BLACKSMITH_BOOTSTRAPPER1_IP@`date +%s`" build-ca nopass
-cp -p pki/ca.crt ${cert_dir}/ca.pem
+  # CA
+  ./easyrsa --batch "--req-cn=$BLACKSMITH_BOOTSTRAPPER1_IP@`date +%s`" build-ca nopass
 
-# Master
-./easyrsa --subject-alt-name="${sans}" build-server-full kubernetes-master nopass
-cp -p pki/issued/kubernetes-master.crt "${cert_dir}/apiserver.pem"
-cp -p pki/private/kubernetes-master.key "${cert_dir}/apiserver-key.pem"
+  # Master
+  ./easyrsa --subject-alt-name="${sans}" build-server-full kubernetes-master nopass
 
-# Machines
-./easyrsa build-client-full machine nopass
+  # Machines
+  ./easyrsa build-client-full machine nopass
 
-# Admin
-./easyrsa build-client-full admin nopass
+  # Admin
+  ./easyrsa build-client-full admin nopass
+  cd $project_root
+fi
 
-mkdir -p $project_root/Takeaways
-cp -p $easyrsa3_dir/pki/ca.crt $project_root/Takeaways/ca.pem
-cp -p $easyrsa3_dir/pki/private/ca.key $project_root/Takeaways/ca.key
-
-cd $project_root
+cp -p $easyrsa3_dir/pki/ca.crt ${cert_dir}/ca.pem
+cp -p $easyrsa3_dir/pki/issued/kubernetes-master.crt "${cert_dir}/apiserver.pem"
+cp -p $easyrsa3_dir/pki/private/kubernetes-master.key "${cert_dir}/apiserver-key.pem"
 
 # Creating kube config for machines
 wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
@@ -96,6 +98,12 @@ wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-credentials machine --client-certificate=$easyrsa3_dir/pki/issued/machine.crt --client-key=$easyrsa3_dir/pki/private/machine.key --embed-certs=true
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
 ./binaries/kubectl config --kubeconfig $wkubeconfig use-context $CONTEXT_NAME
+
+# Takeaways, for humans
+mkdir -p $project_root/Takeaways
+cp -p $easyrsa3_dir/pki/ca.crt Takeaways/ca.pem
+cp -p $easyrsa3_dir/pki/private/ca.key Takeaways/ca.key
+# envsubst < after-deploy/dns-addon.yml > Takeaways/dns-addon.yml
 
 # Creating kube config for admin
 lkubeconfig=Takeaways/kubeconfig
@@ -109,8 +117,4 @@ lkubeconfig=Takeaways/kubeconfig
 tar -cf workspace.tar workspace
 mv workspace.tar workspace/files/
 
-echo
-echo "========================================================================="
-echo
-cat README.md
 echo
