@@ -64,7 +64,7 @@ main machine as _BoB_.
   HostIP=192.168.64.2 docker run --name blacksmith -d --net=host -v $(pwd)/workspace:/workspace cafebazaar/blacksmith -etcd http://${HostIP}:2379 -if eth0 -cluster-name cafecluster -lease-start 192.168.64.51 -lease-range 20 -lease-subnet 255.255.240.0 -router 192.168.64.1 -dns 192.168.100.1
   ```
 
-4. Go to the blacksmith UI ([http://192.168.64.2/ui/](http://192.168.64.2/ui/)).
+4. Go to the blacksmith UI ([http://192.168.64.2:8000/ui/](http://192.168.64.2:8000/ui/)).
 
 5. Start the Bootstrapper machines once from network. They should appear in the
    nodes list when they got their IP from the _BoB_. (Note: For some hardwares,
