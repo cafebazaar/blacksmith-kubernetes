@@ -42,8 +42,8 @@ coreos:
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
         Environment=KUBELET_VERSION=${K8S_VER}
-        ExecStartPre=-/usr/bin/mkdir -p /var/lib/containers
-        ExecStartPre=/usr/bin/chmod 777 /var/lib/containers
+        ExecStartPre=-/usr/bin/mkdir -p /var/log/containers
+        ExecStartPre=/usr/bin/chmod 777 /var/log/containers
         Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf --volume container,kind=host,source=/var/log/containers,readOnly=false --mount volume=container,target=/var/log/containers"
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
           --api-servers=http://127.0.0.1:8080 \
