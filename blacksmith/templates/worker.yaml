@@ -9,5 +9,17 @@ coreos:
     listen-client-urls: http://127.0.0.1:2379,http://127.0.0.1:4001
 
   units:
+<<with ${DOLLAR}eno2_addr := (V "eno2-addr")>>
+<< if ${DOLLAR}eno2_addr | ne "" >>
+    - name: 00-eno2.network
+      runtime: true
+      content: |
+        [Match]
+        Name=eno2
+        [Network]
+        Address=<<${DOLLAR}eno2_addr>>
+<< end >>
+<<end>>
+
 <<template "common-units.yaml" .>>
 <<template "worker-units.yaml" .>>
