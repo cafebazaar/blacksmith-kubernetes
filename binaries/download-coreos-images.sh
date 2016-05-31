@@ -1,6 +1,8 @@
 #!/bin/bash
 CHANNEL=beta
 
+command -v gpg >/dev/null 2>&1 || { echo >&2 "this script require The GNU Privacy Guard(gpg) but it's not installed.  Aborting."; exit 1; }
+
 die() {
   echo
   echo "$@" 1>&2;
