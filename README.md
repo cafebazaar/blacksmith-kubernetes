@@ -22,7 +22,7 @@ generating process will be simpler, and also we will be able to replace the
 special nodes (Bootstrapper nodes) without the temporary blacksmith.
 
 ## Prepare the Workspace
-1. Customize `kuber_env.sh` to match your needs.
+1. Customize `config.sh` to match your needs.
 
 2. Put the authorized ssh keys into `ssh-keys.yaml`
 
@@ -83,7 +83,7 @@ main machine as _BoB_.
 9. The machines will install CoreOS on their storage device, and will reboot
    when done. They should **boot from disk** after this point. You should be
    able to `ping` the machines on their new IPs, which you have configured in
-   `kuber_env.sh`.
+   `config.sh`.
 
 10. On bootstrapper1, when the container images are downloaded and you're able
     to see `k8s_kube-apiserver...` in the `docker ps` list, run this command to
@@ -110,4 +110,5 @@ after the initialization is completed. If everything goes right, you'll see
 * `Takeaways/kubeconfig`
 * `Takeaways/ca.pem`
 * `Takeaways/ca.key`
+* `Takeaways/admin.pfx`
 * `Takeaways/dns-addon.yml`

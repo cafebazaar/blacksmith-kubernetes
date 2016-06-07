@@ -3,7 +3,7 @@ set -e
 
 # Variables are injected from this configuration file:
 export DOLLAR='$'
-source kuber_env.sh
+source config.sh
 int2ip() {
     local ui32=$1; shift
     local ip n
