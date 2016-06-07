@@ -35,3 +35,5 @@ export CONTEXT_NAME=default-context
 
 export K8S_VER=v1.2.2_coreos.0
 export BLACKSMITH_HYPERKUBE_IMAGE=quay.io/coreos/hyperkube:$K8S_VER
+
+export ADMIN_PKCS12_PASSWORD=ChangeMe

@@ -112,6 +112,12 @@ lkubeconfig=Takeaways/kubeconfig
 ./binaries/kubectl config --kubeconfig $lkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=admin
 ./binaries/kubectl config --kubeconfig $lkubeconfig use-context $CONTEXT_NAME
 
+ADMIN_CERT_PEM=$(openssl x509 -in $easyrsa3_dir/pki/issued/admin.crt)
+ADMIN_KEY_PEM=$(cat $easyrsa3_dir/pki/private/admin.key)
+export ADMIN_PKCS12_PASSWORD
+echo -e "$ADMIN_KEY_PEM\n$ADMIN_CERT_PEM" | openssl pkcs12 -export -password env:ADMIN_PKCS12_PASSWORD -name "Kube Admin" -out Takeaways/admin.pfx
+unset ADMIN_PKCS12_PASSWORD
+
 # We need a Blacksmith-to-Blacksmith sync mechanism
 # Hack for now:
 tar -cf workspace.tar workspace
