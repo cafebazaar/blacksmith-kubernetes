@@ -26,6 +26,6 @@ sleep 60
 
 ## Installing SkyDNS
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect skydns) == "[]" ]]; then
-  docker -H unix:///var/run/early-docker.sock pull skynetservices/skydns
-  docker -H unix:///var/run/early-docker.sock run --name skydns --restart=always -d --net=host -e ETCD_MACHINES=http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 skynetservices/skydns
+  docker -H unix:///var/run/early-docker.sock pull quay.io/cafebazaar/skydns:2.5.3a-39-ge18ede9
+  docker -H unix:///var/run/early-docker.sock run --name skydns --restart=always -d --net=host -e ETCD_MACHINES=http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 quay.io/cafebazaar/skydns:2.5.3a-39-ge18ede9
 fi
