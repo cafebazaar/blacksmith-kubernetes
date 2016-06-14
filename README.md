@@ -1,5 +1,5 @@
 # blacksmith-workspace-generator
-Easy workspace generator for [blacksmith] to configure a [kubernetes] cluster,
+Easy workspace generator for [Blacksmith] to configure a [kubernetes] cluster,
 according to [CoreOS + Kubernetes Step By Step guide][k8sguide].
 
 [blacksmith]: https://github.com/cafebazaar/blacksmith
@@ -16,10 +16,10 @@ machines through this state machine:
 
 ![State Machine](https://github.com/cafebazaar/blacksmith-workspace-generator/raw/master/Doc/images/StateMachine.png)
 
-Although the upper branch happens in a temporary blacksmith (The bootstrapper of
+Although the upper branch happens in a temporary Blacksmith (The bootstrapper of
 the bootstrappers), but we are generating only *one* workspace. This way the
 generating process will be simpler, and also we will be able to replace the
-special nodes (Bootstrapper nodes) without the temporary blacksmith.
+special nodes (Bootstrapper nodes) without the temporary Blacksmith.
 
 ## Prepare the Workspace
 1. Customize `config.sh` to match your needs.
@@ -58,13 +58,13 @@ main machine as _BoB_.
   ```
   HostIP=192.168.64.2 docker run -d -p 4001:4001 -p 2380:2380 -p 2379:2379 --name etcd quay.io/coreos/etcd:v2.2.4 -name etcd0 -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://${HostIP}:2380  -listen-peer-urls http://0.0.0.0:2380  -initial-cluster-token etcd-cluster-1  -initial-cluster etcd0=http://${HostIP}:2380  -initial-cluster-state new
   ```
-3. Start blacksmith with the generated `workspace`:
+3. Start Blacksmith with the generated `workspace`:
 
   ```
   HostIP=192.168.64.2 docker run --name blacksmith -d --net=host -v $(pwd)/workspace:/workspace cafebazaar/blacksmith -etcd http://${HostIP}:2379 -if eth0 -cluster-name cafecluster -lease-start 192.168.64.51 -lease-range 20 -lease-subnet 255.255.240.0 -router 192.168.64.1 -dns 192.168.100.1
   ```
 
-4. Go to the blacksmith UI ([http://192.168.64.2:8000/ui/](http://192.168.64.2:8000/ui/)).
+4. Go to the Blacksmith UI ([http://192.168.64.2:8000/ui/](http://192.168.64.2:8000/ui/)).
 
 5. Start the Bootstrapper machines once from network. They should appear in the
    nodes list when they got their IP from the _BoB_. (Note: For some hardwares,
@@ -99,7 +99,7 @@ main machine as _BoB_.
 2. Boot once.
 
 3. They should appear in the nodes list when they got their IP from the active
-blacksmith on one of the bootstrappers. Add flag `state=init-worker` for this
+Blacksmith on one of the bootstrappers. Add flag `state=init-worker` for this
 new node, and reboot the machine. The worker should be rebooted automatically
 after the initialization is completed. If everything goes right, you'll see
 `state=worker` for this node after the reboots.
