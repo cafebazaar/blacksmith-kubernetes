@@ -17,21 +17,19 @@ graph cluster {
     fontsize=8,
   ];
 
-  private [ label="192.168.64.1/20" shape=none, image="images/PrivateNet.png" labelloc=b color="#ffffff"]
+  private [ label="172.19.1.0/24" shape=none, image="images/PrivateNet.png" labelloc=b color="#ffffff"]
   cloud   [ label="The Internet" shape=none, image="images/Internet.png" labelloc=b color="#ffffff"]
   {rank=same; private, cloud}
 
-  bootstraper1 [shape=record, color="#f78787", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper1|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes API Master\n  |<f5> \n }"];
-  bootstraper2 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper2|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes Worker\n  |<f5> \n }"];
-  bootstraper3 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper3|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes Worker\n  |<f5> role=loadbalancer\n }"];
+  bootstraper1 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper1|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes API Master\n  |<f5> \n }"];
+  bootstraper2 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper2|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes API Master\n  |<f5> \n }"];
+  bootstraper3 [shape=record, color="#daeeff", label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Bootstraper3|<f1> etcd\n  |<f2> Blacksmith\n  |<f3> SkyDNS\n  |<f4> Kubernetes API Master\n  |<f5> role=loadbalancer\n }"];
   {rank=same; bootstraper1, bootstraper2, bootstraper3}
 
-  private -- bootstraper1:eno1 [label="192.168.64.11"]
-  private -- bootstraper2:eno1 [label="192.168.64.12"]
-  private -- bootstraper3:eno1 [label="192.168.64.13"]
-  cloud -- bootstraper1:eno2 [color="#a40000", label="192.168.100.61"]
-  cloud -- bootstraper2:eno2 [color="#a40000", label="192.168.100.62"]
-  cloud -- bootstraper3:eno2 [color="#a40000", label="192.168.100.63"]
+  private -- bootstraper1:eno1 [label="172.19.1.11"]
+  private -- bootstraper2:eno1 [label="172.19.1.12"]
+  private -- bootstraper3:eno1 [label="172.19.1.13"]
+  cloud -- bootstraper3:eno2 [color="#a40000", label="Through flags"]
 
   machine1 [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Ku bernetes Worker\n  |<f2> \n }"];
   machine2 [shape=record, label = "{{ <eno1>eno1 | <eno2>eno2 }|<f0> Kubernetes Worker\n  |<f2> \n }"];

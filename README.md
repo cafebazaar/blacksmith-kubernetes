@@ -26,17 +26,15 @@ special nodes (Bootstrapper nodes) without the temporary Blacksmith.
 
 2. Put the authorized ssh keys into `ssh-keys.yaml`
 
-3. Make sure you've imported the [CoreOS gpg key](https://coreos.com/security/image-signing-key/).
+3. Download binary files into `binaries` (See `binaries/download-all.sh`).
 
-4. Download binary files into `binaries` (See `binaries/download-all.sh`).
-
-5. Customize cloudconfig/ignition/bootparams (located inside `blacksmith/`) to
+4. Customize cloudconfig/ignition/bootparams (located inside `blacksmith/`) to
 match your needs, if necessary.
-  * For example, we've configured the eno2 interface of the bootstrappers there.
   * TODO: After implementing [global flags](https://github.com/cafebazaar/blacksmith/issues/32),
-    we'll be able to parametrize these customizations, and move the params to the UI.
+    we'll be able to parametrize almost any type of customizations, and move the
+    params to the UI.
 
-6. Execute `build.sh`
+5. Execute `build.sh`
 
 ## The Bootstrapper of the Bootstrappers (_BoB_)
 This machine will bootstrap the special nodes (Bootstrapper1, Bootstrapper2, and
@@ -56,7 +54,7 @@ main machine as _BoB_.
 2. Start a temporary etcd instance. we did it with docker:
 
   ```
-  HostIP=192.168.64.2 docker run -d -p 4001:4001 -p 2380:2380 -p 2379:2379 --name etcd quay.io/coreos/etcd:v2.2.4 -name etcd0 -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://${HostIP}:2380  -listen-peer-urls http://0.0.0.0:2380  -initial-cluster-token etcd-cluster-1  -initial-cluster etcd0=http://${HostIP}:2380  -initial-cluster-state new
+  HostIP=192.168.64.2 docker run -d -p 4001:4001 -p 2380:2380 -p 2379:2379 --name etcd quay.io/coreos/etcd:v2.2.4 -name etcd0 -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://${HostIP}:2380  -listen-peer-urls http://0.0.0.0:2380  -initial-cluster-token etcd-cluster-1 -initial-cluster etcd0=http://${HostIP}:2380  -initial-cluster-state new
   ```
 3. Start Blacksmith with the generated `workspace`:
 
@@ -76,6 +74,9 @@ main machine as _BoB_.
    * `desired-state`: `bootstrapper2`
    * `desired-state`: `bootstrapper3`
 
+   1. Customizations:
+      * For example you can add `eno2`: `1.2.3.4/24` to set a public ip for a machine.
+
 7. Update the `state` flag of the Bootstrapper machines to `init-install-coreos`.
 
 8. Reboot the machines again from network.
@@ -92,6 +93,19 @@ main machine as _BoB_.
     ```
     curl -H "Content-Type: application/json" -XPOST -d'{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"kube-system"}}' "http://127.0.0.1:8080/api/v1/namespaces"
     ```
+
+11. On bootstrapper1:
+
+    ```
+    source config.sh
+
+    # Multi-master load-balancing
+    # https://github.com/skynetservices/skydns#how-do-i-create-an-address-pool-and-round-robin-between-them
+    etcdctl set /skydns/${CLUSTER_NAME}/master/${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME} '{"host":"${BLACKSMITH_BOOTSTRAPPER1_IP}"}'
+    etcdctl set /skydns/${CLUSTER_NAME}/master/${BLACKSMITH_BOOTSTRAPPER2_HOSTNAME} '{"host":"${BLACKSMITH_BOOTSTRAPPER2_IP}"}'
+    etcdctl set /skydns/${CLUSTER_NAME}/master/${BLACKSMITH_BOOTSTRAPPER3_HOSTNAME} '{"host":"${BLACKSMITH_BOOTSTRAPPER3_IP}"}'
+    ```
+
 
 ## Adding a new Worker
 1. Configure the new machines to **always** boot from network.
@@ -112,3 +126,10 @@ after the initialization is completed. If everything goes right, you'll see
 * `Takeaways/ca.key`
 * `Takeaways/admin.pfx`
 * `Takeaways/dns-addon.yml`
+
+
+## Valid Flags
+* `state`
+* `desired-state`
+* `eno2`
+* `eno2_gw`
