@@ -94,7 +94,7 @@ spec:
         # command = "/kube2sky"
         - --domain=${CLUSTER_NAME}
       - name: skydns
-        image: quay.io/cafebazaar/skydns:2.5.3a-39-ge18ede9
+        image: ${SKYDNS_IMAGE}
         resources:
           limits:
             cpu: 100m
