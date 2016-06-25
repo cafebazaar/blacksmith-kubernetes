@@ -6,7 +6,7 @@ die() {
   exit 1
 }
 
-URL_PREFIX=https://storage.googleapis.com/kubernetes-release/release/v1.2.2/bin/linux/amd64
+URL_PREFIX=https://storage.googleapis.com/kubernetes-release/release/v1.2.4/bin/linux/amd64
 
 curl -O $URL_PREFIX/kubectl || die "Failed while downloading the kubernetes binary (kubectl)"
 chmod +x kubectl
