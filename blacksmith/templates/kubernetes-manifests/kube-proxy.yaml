@@ -7,7 +7,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-proxy
-    image: ${BLACKSMITH_HYPERKUBE_IMAGE}
+    image: ${HYPERKUBE_IMAGE}
     command:
     - /hyperkube
     - proxy

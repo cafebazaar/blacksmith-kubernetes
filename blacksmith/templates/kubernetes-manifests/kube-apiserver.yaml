@@ -7,7 +7,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: ${BLACKSMITH_HYPERKUBE_IMAGE}
+    image: ${HYPERKUBE_IMAGE}
     command:
     - /hyperkube
     - apiserver
@@ -17,12 +17,12 @@ spec:
     - --service-cluster-ip-range=${SERVICE_IP_RANGE}
     - --secure-port=443
     - --advertise-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
-    - --admission-control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
-#    - --insecure-bind-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
+    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/thirdpartyresources=true
     ports:
     - containerPort: 443
       hostPort: 443

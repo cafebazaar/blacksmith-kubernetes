@@ -7,11 +7,12 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-controller-manager
-    image: ${BLACKSMITH_HYPERKUBE_IMAGE}
+    image: ${HYPERKUBE_IMAGE}
     command:
     - /hyperkube
     - controller-manager
     - --master=http://127.0.0.1:8080
+    - --leader-elect=true
     - --cluster-name=${CLUSTER_NAME}
     - --service-account-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
