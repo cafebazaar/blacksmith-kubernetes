@@ -94,7 +94,7 @@ spec:
         # command = "/kube2sky"
         - --domain=${CLUSTER_NAME}
       - name: skydns
-        image: ${SKYDNS_IMAGE}
+        image: gcr.io/google_containers/skydns:2015-10-13-8c72f8c
         resources:
           limits:
             cpu: 100m
