@@ -3,9 +3,9 @@
 ## Installing Blacksmith Docker
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect blacksmith) == "[]" ]]; then
   VOLUME_ARGS="-v /var/lib/blacksmith/workspace:/workspace"
-  ARGS="-etcd http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 -if ${DOLLAR}1 -cluster-name $CLUSTER_NAME -lease-start $INTERNAL_NETWORK_WORKERS_START -lease-range $INTERNAL_NETWORK_WORKERS_LIMIT -lease-subnet $INTERNAL_NETWORK_NETMASK -router $INTERNAL_NETWORK_GATEWAY_IP -dns $EXTERNAL_DNS"
-  docker -H unix:///var/run/early-docker.sock pull cafebazaar/blacksmith
-  docker -H unix:///var/run/early-docker.sock run --name blacksmith --restart=always -d --net=host ${DOLLAR}VOLUME_ARGS cafebazaar/blacksmith ${DOLLAR}ARGS
+  ARGS="-etcd http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 -if ${DOLLAR}1 -cluster-name $CLUSTER_NAME -lease-start $INTERNAL_NETWORK_WORKERS_START -lease-range $INTERNAL_NETWORK_WORKERS_LIMIT -lease-subnet $INTERNAL_NETWORK_NETMASK ${INTERNAL_NETWORK_GATEWAY_PARAM} -dns $EXTERNAL_DNS"
+  docker -H unix:///var/run/early-docker.sock pull ${BLACKSMITH_IMAGE}
+  docker -H unix:///var/run/early-docker.sock run --name blacksmith --restart=always -d --net=host ${DOLLAR}VOLUME_ARGS ${BLACKSMITH_IMAGE} ${DOLLAR}ARGS
 fi
 
 # Wait for blacksmith to be ready
@@ -26,6 +26,6 @@ sleep 60
 
 ## Installing SkyDNS
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect skydns) == "[]" ]]; then
-  docker -H unix:///var/run/early-docker.sock pull quay.io/cafebazaar/skydns:2.5.3a-39-ge18ede9
-  docker -H unix:///var/run/early-docker.sock run --name skydns --restart=always -d --net=host -e ETCD_MACHINES=http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 quay.io/cafebazaar/skydns:2.5.3a-39-ge18ede9
+  docker -H unix:///var/run/early-docker.sock pull ${SKYDNS_IMAGE}
+  docker -H unix:///var/run/early-docker.sock run --name skydns --restart=always -d --net=host -e ETCD_MACHINES=http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 ${SKYDNS_IMAGE}
 fi

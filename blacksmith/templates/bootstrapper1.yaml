@@ -12,111 +12,28 @@ coreos:
 
   units:
     ## Configure your network
-    - name: 00-${BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME}.network
+    - name: 00-${INTERNAL_INTERFACE_NAME}.network
       runtime: true
       content: |
         [Match]
-        Name=${BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME}
+        Name=${INTERNAL_INTERFACE_NAME}
 
         [Network]
+        DHCP=no
         Address=${BLACKSMITH_BOOTSTRAPPER1_IP}/${INTERNAL_NETWORK_NETSIZE}
-        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
         DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
         DNS=${EXTERNAL_DNS}
-    - name: 00-eno2.network
-      runtime: true
-      content: |
-        [Match]
-        Name=eno2
-
-        [Network]
-        Address=192.168.100.61
+<< if "${INTERNAL_NETWORK_GATEWAY_IP}" | ne "" >>
+        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
+<< else >>
+        [Route]
+        Gateway=172.19.1.1
+        Destination=172.19.0.0/24
+<< end >>
 
 <<template "common-units.yaml" .>>
-
-    - name: kubelet.service
-      command: start
-      content: |
-        [Unit]
-        Description=Kubernetes Kubelet
-        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        [Service]
-        Environment=KUBELET_VERSION=${K8S_VER}
-        ExecStartPre=-/usr/bin/mkdir -p /var/log/containers
-        ExecStartPre=/usr/bin/chmod 777 /var/log/containers
-        Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf --volume container,kind=host,source=/var/log/containers,readOnly=false --mount volume=container,target=/var/log/containers"
-        ExecStart=/usr/lib/coreos/kubelet-wrapper \
-          --api-servers=http://127.0.0.1:8080 \
-          --register-schedulable=false \
-          --allow-privileged=true \
-          --config=/etc/kubernetes/manifests \
-          --cluster-dns=${DNS_SERVICE_IP} \
-          --cluster-domain=${CLUSTER_NAME}
-        Restart=always
-        RestartSec=10
-        [Install]
-        WantedBy=multi-user.target
-
-    - name: install-bootstrapper.service
-      command: start
-      content: |
-        [Unit]
-        Description=Initializes the machine
-        Requires=early-docker.service
-        After=etcd.service etcd2.service early-docker.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/tmp/install-bootstrapper.sh ${BLACKSMITH_BOOTSTRAPPER1_INTERNAL_INTERFACE_NAME}
-
-        [Install]
-        WantedBy=multi-user.target
+<<template "master-units.yaml" .>>
 
 write_files:
-  - path: /etc/kubernetes/ssl/ca.pem
-    encoding: "base64"
-    permissions: "0444"
-    owner: "root"
-    content: << b64template "ca.pem" >>
-
-  - path: /etc/kubernetes/ssl/apiserver.pem
-    encoding: "base64"
-    permissions: "0444"
-    owner: "root"
-    content: << b64template "apiserver.pem" >>
-
-  - path: /etc/kubernetes/ssl/apiserver-key.pem
-    encoding: "base64"
-    permissions: "0400"
-    owner: "root"
-    content: << b64template "apiserver-key.pem" >>
-
-  - path: /etc/kubernetes/manifests/kube-apiserver.yaml
-    encoding: "base64"
-    permissions: "0644"
-    owner: "root"
-    content: << b64template "kube-apiserver.yaml" >>
-
-  - path: /etc/kubernetes/manifests/kube-proxy.yaml
-    encoding: "base64"
-    permissions: "0644"
-    owner: "root"
-    content: << b64template "kube-proxy.yaml" >>
-
-  - path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-    encoding: "base64"
-    permissions: "0644"
-    owner: "root"
-    content: << b64template "kube-controller-manager.yaml" >>
-
-  - path: /etc/kubernetes/manifests/kube-scheduler.yaml
-    encoding: "base64"
-    permissions: "0644"
-    owner: "root"
-    content: << b64template "kube-scheduler.yaml" >>
-
-  - path: /tmp/install-bootstrapper.sh
-    encoding: "base64"
-    permissions: "0744"
-    owner: "root"
-    content: << b64template "install-bootstrapper.sh" >>
+<<template "common-files.yaml" .>>
+<<template "master-files.yaml" .>>

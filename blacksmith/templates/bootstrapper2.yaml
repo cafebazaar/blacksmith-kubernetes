@@ -12,49 +12,28 @@ coreos:
 
   units:
     ## Configure your network
-    - name: 00-${BLACKSMITH_BOOTSTRAPPER2_INTERNAL_INTERFACE_NAME}.network
+    - name: 00-${INTERNAL_INTERFACE_NAME}.network
       runtime: true
       content: |
         [Match]
-        Name=${BLACKSMITH_BOOTSTRAPPER2_INTERNAL_INTERFACE_NAME}
+        Name=${INTERNAL_INTERFACE_NAME}
 
         [Network]
+        DHCP=no
         Address=${BLACKSMITH_BOOTSTRAPPER2_IP}/${INTERNAL_NETWORK_NETSIZE}
-        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
-        DNS=${BLACKSMITH_BOOTSTRAPPER2_IP}
+        DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
         DNS=${EXTERNAL_DNS}
-    - name: 00-eno2.network
-      runtime: true
-      content: |
-        [Match]
-        Name=eno2
-
-        [Network]
-        Address=192.168.100.62
-
-    - name: install-bootstrapper.service
-      command: start
-      content: |
-        [Unit]
-        Description=Initializes the machine
-        Requires=early-docker.service
-        After=etcd.service etcd2.service early-docker.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/tmp/install-bootstrapper.sh ${BLACKSMITH_BOOTSTRAPPER2_INTERNAL_INTERFACE_NAME}
-
-        [Install]
-        WantedBy=multi-user.target
+<< if "${INTERNAL_NETWORK_GATEWAY_IP}" | ne "" >>
+        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
+<< else >>
+        [Route]
+        Gateway=172.19.1.1
+        Destination=172.19.0.0/24
+<< end >>
 
 <<template "common-units.yaml" .>>
-<<template "worker-units.yaml" .>>
+<<template "master-units.yaml" .>>
 
 write_files:
-<<template "worker-files.yaml" .>>
-
-  - path: /tmp/install-bootstrapper.sh
-    encoding: "base64"
-    permissions: "0744"
-    owner: "root"
-    content: << b64template "install-bootstrapper.sh" >>
+<<template "common-files.yaml" .>>
+<<template "master-files.yaml" .>>

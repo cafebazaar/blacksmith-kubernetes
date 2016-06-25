@@ -7,16 +7,49 @@
     - name: flanneld.service
       command: start
       drop-ins:
-      - name: 50-network-config.conf
+      - name: 40-network-config.conf
         content: |
           [Service]
+          ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
           ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"$POD_NETWORK", "Backend": {"Type": "vxlan"}}'
+
+<<with ${DOLLAR}address := (V "${EXTERNAL_INTERFACE_NAME}")>><< if ${DOLLAR}address | ne "" >>
+    - name: 00-${EXTERNAL_INTERFACE_NAME}.network
+      runtime: true
+      content: |
+        [Match]
+        Name=${EXTERNAL_INTERFACE_NAME}
+
+        [Network]
+        DHCP=no
+        Address=<< ${DOLLAR}address >>
+<<with ${DOLLAR}gateway := (V "${EXTERNAL_INTERFACE_NAME}_gw")>><< if ${DOLLAR}gateway | ne "" >>
+        Gateway=<< ${DOLLAR}gateway >>
+<< end >><<end>>
+
+<< end >><<end>>
 
     - name: docker.service
       command: start
       drop-ins:
+        - name: 20-http-proxy.conf
+          content: |
+            [Service]
+            Environment="HTTP_PROXY=${CONTAINER_HTTP_PROXY}"
+            Environment="HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}"
+            Environment="NO_PROXY=${CONTAINER_NO_PROXY}"
         - name: 50-flanneld.conf
           content: |
             [Unit]
             After=flanneld.service
             Requires=flanneld.service
+
+    - name: early-docker.service
+      command: start
+      drop-ins:
+        - name: 20-http-proxy.conf
+          content: |
+            [Service]
+            Environment="HTTP_PROXY=${CONTAINER_HTTP_PROXY}"
+            Environment="HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}"
+            Environment="NO_PROXY=${CONTAINER_NO_PROXY}"

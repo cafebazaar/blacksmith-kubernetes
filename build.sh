@@ -21,6 +21,11 @@ netmask() {
 
 export INTERNAL_NETWORK_NETMASK=$(netmask ${INTERNAL_NETWORK_NETSIZE})
 
+export INTERNAL_NETWORK_GATEWAY_PARAM=
+if [[ -n "${INTERNAL_NETWORK_GATEWAY_IP}" ]]; then
+  export INTERNAL_NETWORK_GATEWAY_PARAM="-router $INTERNAL_NETWORK_GATEWAY_IP"
+fi
+
 project_root=$(pwd)
 
 #### Clean ###################################################################
@@ -44,7 +49,9 @@ envsubst < blacksmith/templates/bootstrapper1.yaml > workspace/config/cloudconfi
 envsubst < blacksmith/templates/bootstrapper2.yaml > workspace/config/cloudconfig/bootstrapper2.yaml
 envsubst < blacksmith/templates/bootstrapper3.yaml > workspace/config/cloudconfig/bootstrapper3.yaml
 envsubst < blacksmith/templates/common-units.yaml > workspace/config/cloudconfig/common-units.yaml
+envsubst < blacksmith/templates/flannel-options.env > workspace/config/cloudconfig/flannel-options.env
 envsubst < blacksmith/templates/install-bootstrapper.sh > workspace/config/cloudconfig/install-bootstrapper.sh
+envsubst < blacksmith/templates/master-units.yaml > workspace/config/cloudconfig/master-units.yaml
 envsubst < blacksmith/templates/worker-units.yaml > workspace/config/cloudconfig/worker-units.yaml
 envsubst < blacksmith/templates/worker.yaml > workspace/config/cloudconfig/worker.yaml
 
@@ -58,7 +65,7 @@ envsubst < blacksmith/templates/kubernetes-manifests/kube-scheduler.yaml > works
 extra_sans=${CERT_ARGS:-}
 cert_dir=$project_root/workspace/config/cloudconfig
 
-sans="IP:${BLACKSMITH_BOOTSTRAPPER1_IP},IP:10.100.0.1,DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME},DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME},DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.kubernetes.local"
+sans="IP:${BLACKSMITH_BOOTSTRAPPER1_IP},IP:${BLACKSMITH_BOOTSTRAPPER2_IP},IP:${BLACKSMITH_BOOTSTRAPPER3_IP},IP:10.100.0.1,DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME},DNS:${BLACKSMITH_BOOTSTRAPPER1_HOSTNAME}.${CLUSTER_NAME},DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.${CLUSTER_NAME},DNS:master.${CLUSTER_NAME}"
 if [[ -n "${extra_sans}" ]]; then
   sans="${sans},${extra_sans}"
 fi
@@ -94,7 +101,7 @@ cp -p $easyrsa3_dir/pki/private/kubernetes-master.key "${cert_dir}/apiserver-key
 
 # Creating kube config for machines
 wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
-./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
+./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://master.${CLUSTER_NAME}
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-credentials machine --client-certificate=$easyrsa3_dir/pki/issued/machine.crt --client-key=$easyrsa3_dir/pki/private/machine.key --embed-certs=true
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
 ./binaries/kubectl config --kubeconfig $wkubeconfig use-context $CONTEXT_NAME
@@ -107,7 +114,7 @@ envsubst < after-deploy/dns-addon.yml > Takeaways/dns-addon.yml
 
 # Creating kube config for admin
 lkubeconfig=Takeaways/kubeconfig
-./binaries/kubectl config --kubeconfig $lkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://$BLACKSMITH_BOOTSTRAPPER1_IP
+./binaries/kubectl config --kubeconfig $lkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://master.${CLUSTER_NAME}
 ./binaries/kubectl config --kubeconfig $lkubeconfig set-credentials admin --client-certificate=$easyrsa3_dir/pki/issued/admin.crt --client-key=$easyrsa3_dir/pki/private/admin.key --embed-certs=true
 ./binaries/kubectl config --kubeconfig $lkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=admin
 ./binaries/kubectl config --kubeconfig $lkubeconfig use-context $CONTEXT_NAME
