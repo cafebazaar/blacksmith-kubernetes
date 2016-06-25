@@ -52,7 +52,6 @@ envsubst < blacksmith/templates/common-units.yaml > workspace/config/cloudconfig
 envsubst < blacksmith/templates/flannel-options.env > workspace/config/cloudconfig/flannel-options.env
 envsubst < blacksmith/templates/install-bootstrapper.sh > workspace/config/cloudconfig/install-bootstrapper.sh
 envsubst < blacksmith/templates/master-units.yaml > workspace/config/cloudconfig/master-units.yaml
-envsubst < blacksmith/templates/worker-units.yaml > workspace/config/cloudconfig/worker-units.yaml
 envsubst < blacksmith/templates/worker.yaml > workspace/config/cloudconfig/worker.yaml
 
 envsubst < blacksmith/templates/kubernetes-manifests/kube-apiserver.yaml > workspace/config/cloudconfig/kube-apiserver.yaml

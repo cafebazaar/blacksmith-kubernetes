@@ -1,3 +1,4 @@
+hostname: <<.Hostname>>.<<.Domain>>
 write_files:
 <<template "worker-files.yaml" .>>
 
@@ -9,17 +10,51 @@ coreos:
     listen-client-urls: http://127.0.0.1:2379,http://127.0.0.1:4001
 
   units:
-<<with ${DOLLAR}eno2_addr := (V "eno2-addr")>>
-<< if ${DOLLAR}eno2_addr | ne "" >>
-    - name: 00-eno2.network
+<<template "common-units.yaml" .>>
+
+    - name: 00-${INTERNAL_INTERFACE_NAME}.network
       runtime: true
       content: |
         [Match]
-        Name=eno2
-        [Network]
-        Address=<<${DOLLAR}eno2_addr>>
-<< end >>
-<<end>>
+        Name=${INTERNAL_INTERFACE_NAME}
 
-<<template "common-units.yaml" .>>
-<<template "worker-units.yaml" .>>
+        [Network]
+        DHCP=no
+        Address=<<.IP>>/${INTERNAL_NETWORK_NETSIZE}
+        DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
+        DNS=${BLACKSMITH_BOOTSTRAPPER2_IP}
+        DNS=${BLACKSMITH_BOOTSTRAPPER3_IP}
+<< if "${INTERNAL_NETWORK_GATEWAY_IP}" | ne "" >>
+        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
+<< else >>
+        [Route]
+        Gateway=172.19.1.1
+        Destination=172.19.0.0/24
+<< end >>
+
+    - name: kubelet.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Kubelet
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        Environment=KUBELET_VERSION=${K8S_VER}
+        ExecStartPre=-/usr/bin/mkdir -p /var/log/containers
+        ExecStartPre=/usr/bin/chmod 777 /var/log/containers
+        Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf --volume container,kind=host,source=/var/log/containers,readOnly=false --mount volume=container,target=/var/log/containers"
+        Environment="HTTP_PROXY=${CONTAINER_HTTP_PROXY}"
+        Environment="HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}"
+        Environment="NO_PROXY=${CONTAINER_NO_PROXY}"
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+          --api-servers=https://${BLACKSMITH_BOOTSTRAPPER1_IP},https://${BLACKSMITH_BOOTSTRAPPER2_IP},https://${BLACKSMITH_BOOTSTRAPPER3_IP} \
+          --register-node=true \
+          --allow-privileged=true \
+          --config=/etc/kubernetes/manifests \
+          --cluster-dns=${DNS_SERVICE_IP} \
+          --cluster-domain=${CLUSTER_NAME} \
+          --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
+        Restart=always
+        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target
