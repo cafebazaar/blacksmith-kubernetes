@@ -53,13 +53,36 @@ main machine as _BoB_.
 
 2. Start a temporary etcd instance. we did it with docker:
 
-  ```
-  HostIP=192.168.64.2 docker run -d -p 4001:4001 -p 2380:2380 -p 2379:2379 --name etcd quay.io/coreos/etcd:v2.2.4 -name etcd0 -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 -initial-advertise-peer-urls http://${HostIP}:2380  -listen-peer-urls http://0.0.0.0:2380  -initial-cluster-token etcd-cluster-1 -initial-cluster etcd0=http://${HostIP}:2380  -initial-cluster-state new
+  ```shell
+  HostIP=192.168.64.2 \
+  docker run -d \
+  -p 4001:4001 \
+  -p 2380:2380 \
+  -p 2379:2379 \
+  --name etcd quay.io/coreos/etcd:v2.2.4 \
+  -name etcd0 \
+  -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 \
+  -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
+  -initial-advertise-peer-urls http://${HostIP}:2380 \
+  -listen-peer-urls http://0.0.0.0:2380 \
+  -initial-cluster-token etcd-cluster-1 \
+  -initial-cluster etcd0=http://${HostIP}:2380 \
+  -initial-cluster-state new
   ```
 3. Start Blacksmith with the generated `workspace`:
 
-  ```
-  HostIP=192.168.64.2 docker run --name blacksmith -d --net=host -v $(pwd)/workspace:/workspace cafebazaar/blacksmith -etcd http://${HostIP}:2379 -if eth0 -cluster-name cafecluster -lease-start 192.168.64.51 -lease-range 20 -lease-subnet 255.255.240.0 -router 192.168.64.1 -dns 192.168.100.1
+  ```shell
+  HostIP=192.168.64.2 \
+  docker run --name blacksmith -d \
+  --net=host -v $(pwd)/workspace:/workspace cafebazaar/blacksmith \
+  -etcd http://${HostIP}:2379 \
+  -if eth0 \
+  -cluster-name cafecluster \
+  -lease-start 192.168.64.51 \
+  -lease-range 20 \
+  -lease-subnet 255.255.240.0 \
+  -router 192.168.64.1 \
+  -dns 192.168.100.1
   ```
 
 4. Go to the Blacksmith UI ([http://192.168.64.2:8000/ui/](http://192.168.64.2:8000/ui/)).
