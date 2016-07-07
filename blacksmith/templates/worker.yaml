@@ -1,5 +1,6 @@
 hostname: <<.Hostname>>.<<.Domain>>
 write_files:
+<<template "common-files.yaml" .>>
 <<template "worker-files.yaml" .>>
 
 coreos:
