@@ -13,6 +13,11 @@ write_files:
     content: << b64template "reboot_service_script.sh" >>
 
 coreos:
+  etcd2:
+    proxy: on
+    listen-client-urls: http://127.0.0.1:2379,http://127.0.0.1:4001
+    initial-cluster: <<.EtcdEndpoints>>
+    
   units:
     - name: etcd2.service
       command: start
