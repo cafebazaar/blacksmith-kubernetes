@@ -54,7 +54,7 @@ main machine as _BoB_.
 2. Start a temporary etcd instance. we did it with docker:
 
   ```shell
-  HostIP=192.168.64.2 \
+  export HostIP=192.168.64.2 \
   docker run -d \
   -p 4001:4001 \
   -p 2380:2380 \
@@ -72,7 +72,7 @@ main machine as _BoB_.
 3. Start Blacksmith with the generated `workspace`:
 
   ```shell
-  HostIP=192.168.64.2 \
+  export HostIP=192.168.64.2 \
   docker run --name blacksmith -d \
   --net=host -v $(pwd)/workspace:/workspace cafebazaar/blacksmith \
   -etcd http://${HostIP}:2379 \
