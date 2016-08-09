@@ -13,26 +13,6 @@ coreos:
   units:
 <<template "common-units.yaml" .>>
 
-    - name: 00-${INTERNAL_INTERFACE_NAME}.network
-      runtime: true
-      content: |
-        [Match]
-        Name=${INTERNAL_INTERFACE_NAME}
-
-        [Network]
-        DHCP=no
-        Address=<<.IP>>/${INTERNAL_NETWORK_NETSIZE}
-        DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
-        DNS=${BLACKSMITH_BOOTSTRAPPER2_IP}
-        DNS=${BLACKSMITH_BOOTSTRAPPER3_IP}
-<< if "${INTERNAL_NETWORK_GATEWAY_IP}" | ne "" >>
-        Gateway=${INTERNAL_NETWORK_GATEWAY_IP}
-<< else >>
-        [Route]
-        Gateway=172.19.1.1
-        Destination=172.19.0.0/24
-<< end >>
-
     - name: kubelet.service
       command: start
       content: |

@@ -3,6 +3,7 @@
 
 export CLUSTER_NAME=cafecluster
 
+export INTERNAL_NET_CONF='{"netmask":"255.255.255.0", "classlessRouteOption": [{"router": "172.19.1.1", "size":24, "destination": "172.19.0.0"}]}'
 
 # Bootstrapper and Master
 export BLACKSMITH_BOOTSTRAPPER1_HOSTNAME=bootstrapper1

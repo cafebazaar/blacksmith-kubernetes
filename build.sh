@@ -36,7 +36,6 @@ rm -rf Takeaways
 mkdir -p workspace/files
 
 cp -r binaries/images workspace/
-cp binaries/initial.yaml workspace/
 cp -r blacksmith/config workspace/
 
 # For coreos-install
@@ -59,6 +58,9 @@ envsubst < blacksmith/templates/kubernetes-manifests/kube-controller-manager.yam
 envsubst < blacksmith/templates/kubernetes-manifests/kube-proxy.yaml > workspace/config/cloudconfig/kube-proxy.yaml
 envsubst < blacksmith/templates/kubernetes-manifests/kube-proxy-worker.yaml > workspace/config/cloudconfig/kube-proxy-worker.yaml
 envsubst < blacksmith/templates/kubernetes-manifests/kube-scheduler.yaml > workspace/config/cloudconfig/kube-scheduler.yaml
+
+cp binaries/initial.yaml workspace/
+echo "net-conf: '$INTERNAL_NET_CONF'" >> workspace/initial.yaml
 
 #### Certificates ############################################################
 extra_sans=${CERT_ARGS:-}
