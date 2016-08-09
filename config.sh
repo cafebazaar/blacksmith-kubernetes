@@ -35,7 +35,7 @@ export CERT_ARGS=
 
 export CONTEXT_NAME=default-context
 
-export K8S_VER=v1.2.4_coreos.1
+export K8S_VER=v1.3.4_coreos.0
 export HYPERKUBE_IMAGE=quay.io/coreos/hyperkube:$K8S_VER
 export BLACKSMITH_IMAGE=quay.io/cafebazaar/blacksmith:v0.9.2
 export SKYDNS_IMAGE=quay.io/cafebazaar/skydns:2.5.3a-42-gc4d7e3d

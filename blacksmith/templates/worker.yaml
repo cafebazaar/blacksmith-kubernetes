@@ -22,8 +22,7 @@ coreos:
         [Service]
         Environment=KUBELET_VERSION=${K8S_VER}
         ExecStartPre=-/usr/bin/mkdir -p /var/log/containers
-        ExecStartPre=/usr/bin/chmod 777 /var/log/containers
-        Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf --volume container,kind=host,source=/var/log/containers,readOnly=false --mount volume=container,target=/var/log/containers"
+        Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log"
         Environment="HTTP_PROXY=${CONTAINER_HTTP_PROXY}"
         Environment="HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}"
         Environment="NO_PROXY=${CONTAINER_NO_PROXY}"
