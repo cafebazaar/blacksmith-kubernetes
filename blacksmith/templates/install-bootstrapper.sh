@@ -3,7 +3,7 @@
 ## Installing Blacksmith Docker
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect blacksmith) == "[]" ]]; then
   VOLUME_ARGS="-v /var/lib/blacksmith/workspace:/workspace"
-  ARGS="-etcd http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 -if ${DOLLAR}1 -cluster-name $CLUSTER_NAME -lease-start $INTERNAL_NETWORK_WORKERS_START -lease-range $INTERNAL_NETWORK_WORKERS_LIMIT -lease-subnet $INTERNAL_NETWORK_NETMASK ${INTERNAL_NETWORK_GATEWAY_PARAM} -dns $EXTERNAL_DNS"
+  ARGS="-etcd http://$BLACKSMITH_BOOTSTRAPPER1_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER2_IP:2379,http://$BLACKSMITH_BOOTSTRAPPER3_IP:2379 -if ${DOLLAR}1 -cluster-name $CLUSTER_NAME -lease-start $INTERNAL_NETWORK_WORKERS_START -lease-range $INTERNAL_NETWORK_WORKERS_LIMIT -dns $EXTERNAL_DNS"
   docker -H unix:///var/run/early-docker.sock pull ${BLACKSMITH_IMAGE}
   docker -H unix:///var/run/early-docker.sock run --name blacksmith --restart=always -d --net=host ${DOLLAR}VOLUME_ARGS ${BLACKSMITH_IMAGE} ${DOLLAR}ARGS
 fi

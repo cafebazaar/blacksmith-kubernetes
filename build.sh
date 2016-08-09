@@ -21,11 +21,6 @@ netmask() {
 
 export INTERNAL_NETWORK_NETMASK=$(netmask ${INTERNAL_NETWORK_NETSIZE})
 
-export INTERNAL_NETWORK_GATEWAY_PARAM=
-if [[ -n "${INTERNAL_NETWORK_GATEWAY_IP}" ]]; then
-  export INTERNAL_NETWORK_GATEWAY_PARAM="-router $INTERNAL_NETWORK_GATEWAY_IP"
-fi
-
 project_root=$(pwd)
 
 #### Clean ###################################################################
