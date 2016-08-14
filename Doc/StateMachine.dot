@@ -3,7 +3,7 @@ digraph finite_state_machine {
 	size="8,5"
 	node [shape = doublecircle]; new installed worker;
 	node [shape = circle ];
-	bootstrapper1 [style=filled, color="#f78787"];
+	bootstrapper1 [style=filled, color="#daeeff"];
 	bootstrapper2 [style=filled, color="#daeeff"];
 	bootstrapper3 [style=filled, color="#daeeff"];
 	new -> "init-install-coreos" [ label = "To install CoreOS on one of the special nodes" ];
