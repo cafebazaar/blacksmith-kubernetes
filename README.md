@@ -74,7 +74,7 @@ main machine as _BoB_.
   ```shell
   export HostIP=192.168.64.2 \
   docker run --name blacksmith -d \
-  --net=host -v $(pwd)/workspace:/workspace cafebazaar/blacksmith \
+  --net=host -v $(pwd)/workspace:/workspace quay.io/cafebazaar/blacksmith \
   -etcd http://${HostIP}:2379 \
   -if eth0 \
   -cluster-name cafecluster \

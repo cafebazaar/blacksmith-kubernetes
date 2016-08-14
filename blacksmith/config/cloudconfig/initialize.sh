@@ -3,21 +3,21 @@
 device=$(lsblk -i -o name,type | grep disk | cut -f 1 -d " ")
 
 function partition_disk {
-	curl -X PUT "http://<< .WebServerAddr >>/api/machine/<< .Mac >>/state?value=starting-<< V "state" >>"
+	curl -X PUT "http://<< .WebServerAddr >>/api/machines/<< .Mac >>/variables/state?value=starting-<< V "state" >>"
 	partition=1
 	echo "making partitions"
 	echo -e "g\nn\n$partition\n\n\nw\n" | fdisk /dev/$device
 	sleep 1
 	echo "making filesystem"
 	sleep 1
-	yes | mkfs.ext4 -L ROOT /dev/$device$partition  &&  curl -X PUT "http://<< .WebServerAddr >>/api/machine/<< .Mac >>/state?value=worker"
+	yes | mkfs.ext4 -L ROOT /dev/$device$partition  &&  curl -X PUT "http://<< .WebServerAddr >>/api/machines/<< .Mac >>/variables/state?value=worker"
 }
 
 function install_coreos {
 	DEVICE=/dev/$device
 	WORKDIR=$(mktemp --tmpdir -d init-install-coreos.XXXXXXXXXX)
 
-	curl -X PUT "http://<< .WebServerAddr >>/api/machine/<< .Mac >>/state?value=<< V "desired-state" >>"
+	curl -X PUT "http://<< .WebServerAddr >>/api/machines/<< .Mac >>/variables/state?value=<< V "desired-state" >>"
 	curl -L "http://<< .WebServerAddr >>/t/cc/<< .Mac >>" -o $WORKDIR/cloudconfig.yaml
 
 	coreos-install -c $WORKDIR/cloudconfig.yaml -d $DEVICE -b http://<< .WebServerAddr >>/files/images
@@ -47,7 +47,7 @@ function install_coreos {
 	rm -rf "${WORKDIR}"
   trap - EXIT
 
-	curl -X PUT "http://<< .WebServerAddr >>/api/machine/<< .Mac >>/state?value=installed"
+	curl -X PUT "http://<< .WebServerAddr >>/api/machines/<< .Mac >>/variables/state?value=installed"
 }
 
 function usage {
