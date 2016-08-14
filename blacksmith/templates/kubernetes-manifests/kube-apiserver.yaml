@@ -15,7 +15,7 @@ spec:
     - --etcd-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER2_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001
     - --allow-privileged=true
     - --service-cluster-ip-range=${SERVICE_IP_RANGE}
-    - --secure-port=443
+    - --secure-port=4443
     - --advertise-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
     - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
@@ -24,8 +24,8 @@ spec:
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,apps/v1alpha1=true
     ports:
-    - containerPort: 443
-      hostPort: 443
+    - containerPort: 4443
+      hostPort: 4443
       name: https
     - containerPort: 8080
       hostPort: 8080

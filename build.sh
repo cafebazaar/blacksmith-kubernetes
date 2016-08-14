@@ -25,7 +25,7 @@ project_root=$(pwd)
 
 #### Clean ###################################################################
 rm -rf workspace/*
-rm -rf Takeaways
+rm -rf Takeaways/*
 
 #### BoB Workspace ###########################################################
 mkdir -p workspace/files
@@ -97,7 +97,7 @@ cp -p $easyrsa3_dir/pki/private/kubernetes-master.key "${cert_dir}/apiserver-key
 
 # Creating kube config for machines
 wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
-./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://master.${CLUSTER_NAME}
+./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://master.${CLUSTER_NAME}:4443
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-credentials machine --client-certificate=$easyrsa3_dir/pki/issued/machine.crt --client-key=$easyrsa3_dir/pki/private/machine.key --embed-certs=true
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
 ./binaries/kubectl config --kubeconfig $wkubeconfig use-context $CONTEXT_NAME
@@ -110,7 +110,7 @@ envsubst < after-deploy/dns-addon.yml > Takeaways/dns-addon.yml
 
 # Creating kube config for admin
 lkubeconfig=Takeaways/kubeconfig
-./binaries/kubectl config --kubeconfig $lkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://master.${CLUSTER_NAME}
+./binaries/kubectl config --kubeconfig $lkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://${K8S_LB_DNS}:4443
 ./binaries/kubectl config --kubeconfig $lkubeconfig set-credentials admin --client-certificate=$easyrsa3_dir/pki/issued/admin.crt --client-key=$easyrsa3_dir/pki/private/admin.key --embed-certs=true
 ./binaries/kubectl config --kubeconfig $lkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=admin
 ./binaries/kubectl config --kubeconfig $lkubeconfig use-context $CONTEXT_NAME
