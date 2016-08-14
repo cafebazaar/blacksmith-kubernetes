@@ -3,9 +3,9 @@ coreos:
   etcd2:
     name: etcd3
     advertise-client-urls: http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2379,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001
-    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    listen-client-urls: http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2379,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001,http://127.0.0.1:2379,http://127.0.0.1:4001
     initial-advertise-peer-urls: http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380
-    listen-peer-urls: http://0.0.0.0:2380
+    listen-peer-urls: http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380,http://127.0.0.1:2380
     initial-cluster: etcd1=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:2380,etcd2=http://${BLACKSMITH_BOOTSTRAPPER2_IP}:2380,etcd3=http://${BLACKSMITH_BOOTSTRAPPER3_IP}:2380
     initial-cluster-state: new
     cors: '*'
