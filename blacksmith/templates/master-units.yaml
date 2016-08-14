@@ -3,7 +3,7 @@
       content: |
         [Unit]
         Description=Kubernetes Kubelet
-        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        Documentation=https://github.com/kubernetes/kubernetes
         [Service]
         Environment=KUBELET_VERSION=${K8S_VER}
         ExecStartPre=-/usr/bin/mkdir -p /var/log/containers
@@ -13,7 +13,7 @@
         Environment="NO_PROXY=${CONTAINER_NO_PROXY}"
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
           --api-servers=http://127.0.0.1:8080 \
-          --register-schedulable=false \
+          --register-schedulable=true \
           --allow-privileged=true \
           --config=/etc/kubernetes/manifests \
           --cluster-dns=${DNS_SERVICE_IP} \
