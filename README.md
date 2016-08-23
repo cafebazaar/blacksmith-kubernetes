@@ -1,4 +1,4 @@
-# blacksmith-workspace-generator
+# Blacksmith's Kubernetes Workspace
 Easy workspace generator for [Blacksmith] to configure a [kubernetes] cluster,
 according to [CoreOS + Kubernetes Step By Step guide][k8sguide].
 
