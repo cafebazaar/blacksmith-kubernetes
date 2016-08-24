@@ -1,4 +1,3 @@
-hostname: <<.Hostname>>.<<.Domain>>
 write_files:
 <<template "common-files.yaml" .>>
 <<template "worker-files.yaml" .>>
@@ -30,6 +29,7 @@ coreos:
           --register-node=true \
           --allow-privileged=true \
           --config=/etc/kubernetes/manifests \
+          --node-ip=<<.IP>> \
           --cluster-dns=${DNS_SERVICE_IP} \
           --cluster-domain=${CLUSTER_NAME} \
           --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml

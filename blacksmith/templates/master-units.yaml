@@ -16,6 +16,7 @@
           --register-schedulable=true \
           --allow-privileged=true \
           --config=/etc/kubernetes/manifests \
+          --node-ip=<<.IP>> \
           --cluster-dns=${DNS_SERVICE_IP} \
           --cluster-domain=${CLUSTER_NAME}
         Restart=always
