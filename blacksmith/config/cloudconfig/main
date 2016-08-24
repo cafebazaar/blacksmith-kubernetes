@@ -1,37 +1,46 @@
 #cloud-config
-<<with $ctx := .>>
-<<with $state := (V "state")>>
-<< if $state | eq "" >>
-<<template "new.yaml" $ctx>>
+{{/* Start $ctx */}}
+<< with $ctx := . >>
 
-<< else if $state | eq "unknown" >>
-<<template "new.yaml" $ctx>>
+{{/* Start $state */}}
+<< with $state := (V "state") >>
 
-<< else if $state | eq "worker" >>
-<<template "worker.yaml" $ctx>>
+<< if $state | eq "worker" >>
+<< template "worker.yaml" $ctx >>
 
 << else if $state | eq "init-worker" >>
-<<template "init-worker.yaml" $ctx>>
+<< template "init-worker.yaml" $ctx >>
 
 << else if $state | eq "init-install-coreos" >>
-<<template "init-install-coreos.yaml" $ctx>>
+<< template "init-install-coreos.yaml" $ctx >>
 
 << else if $state | eq "bootstrapper1" >>
-<<template "bootstrapper1.yaml" $ctx>>
+<< template "bootstrapper1.yaml" $ctx>>
 
 << else if $state | eq "bootstrapper2" >>
-<<template "bootstrapper2.yaml" $ctx>>
+<< template "bootstrapper2.yaml" $ctx >>
 
 << else if $state | eq "bootstrapper3" >>
-<<template "bootstrapper3.yaml" $ctx>>
+<< template "bootstrapper3.yaml" $ctx >>
 
 << else >>
+
 write_files:
   - path: /tmp/state
     content: UNEXPECTED-> << V "state" >>
 
 << end >>
-<<end>>
+
+<< else >>
+
+{{/* when $state is empty */}}
+<< template "new.yaml" $ctx >>
+
+{{/* End $state */}}
+<< end >>
+
 ssh_authorized_keys:
-<<template "ssh_authorized_keys.yaml" $ctx>>
-<<end>>
+<< template "ssh_authorized_keys.yaml" $ctx >>
+
+{{/* End $ctx */}}
+<< end >>
