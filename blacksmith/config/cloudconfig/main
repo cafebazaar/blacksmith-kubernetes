@@ -1,8 +1,8 @@
 #cloud-config
-{{/* Start $ctx */}}
+<</* Start $ctx */>>
 << with $ctx := . >>
 
-{{/* Start $state */}}
+<</* Start $state */>>
 << with $state := (V "state") >>
 
 << if $state | eq "worker" >>
@@ -33,14 +33,14 @@ write_files:
 
 << else >>
 
-{{/* when $state is empty */}}
+<</* when $state is empty */>>
 << template "new.yaml" $ctx >>
 
-{{/* End $state */}}
+<</* End $state */>>
 << end >>
 
 ssh_authorized_keys:
 << template "ssh_authorized_keys.yaml" $ctx >>
 
-{{/* End $ctx */}}
+<</* End $ctx */>>
 << end >>
