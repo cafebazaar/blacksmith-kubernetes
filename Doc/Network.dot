@@ -2,6 +2,7 @@ graph cluster {
 
   label="Network Diagram";
   fontname="arial";
+  size="15"
 
   node [
     shape=box,
