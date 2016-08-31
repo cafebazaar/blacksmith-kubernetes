@@ -97,7 +97,7 @@ cp -p $easyrsa3_dir/pki/private/kubernetes-master.key "${cert_dir}/apiserver-key
 
 # Creating kube config for machines
 wkubeconfig=workspace/config/cloudconfig/worker-kubeconfig.yaml
-./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://master.${CLUSTER_NAME}:4443
+./binaries/kubectl config --kubeconfig $wkubeconfig set-cluster $CLUSTER_NAME --certificate-authority=${cert_dir}/ca.pem --embed-certs=true --server=https://${K8S_LB_DNS}:4443
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-credentials machine --client-certificate=$easyrsa3_dir/pki/issued/machine.crt --client-key=$easyrsa3_dir/pki/private/machine.key --embed-certs=true
 ./binaries/kubectl config --kubeconfig $wkubeconfig set-context $CONTEXT_NAME --cluster=$CLUSTER_NAME --user=machine
 ./binaries/kubectl config --kubeconfig $wkubeconfig use-context $CONTEXT_NAME
