@@ -17,7 +17,7 @@ coreos:
 
         [Service]
         Type=oneshot
-        ExecStart=/tmp/initialize.sh -i
+        ExecStart=/tmp/initialize.sh -f -i
 
         [Install]
         WantedBy=multi-user.target

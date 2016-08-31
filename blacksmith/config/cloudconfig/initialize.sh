@@ -85,10 +85,12 @@ do
 	 esac
 done
 
+if $do_partitioning; then
+	partition_disk
+fi
+
 if $do_install; then
 	install_coreos
-elif $do_partitioning; then
-	partition_disk
 fi
 
 if $reboot; then
