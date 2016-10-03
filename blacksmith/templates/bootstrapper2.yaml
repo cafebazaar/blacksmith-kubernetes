@@ -30,7 +30,15 @@ coreos:
         Gateway=172.19.1.1
         Destination=172.19.0.0/24
 << end >>
+    - name: 00-${EXTERNAL_INTERFACE_NAME}.network
+      runtime: true
+      content: |
+        [Match]
+        Name=${EXTERNAL_INTERFACE_NAME}
 
+        [Network]
+        DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
+        DNS=${EXTERNAL_DNS}
 <<template "common-units.yaml" .>>
 <<template "master-units.yaml" .>>
 
