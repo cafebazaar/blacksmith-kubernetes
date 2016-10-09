@@ -56,6 +56,7 @@ envsubst < blacksmith/templates/kubernetes-manifests/kube-scheduler.yaml > works
 
 cp binaries/initial.yaml workspace/
 echo "net-conf: '$INTERNAL_NET_CONF'" >> workspace/initial.yaml
+echo "git-rev: $(git rev-parse --short HEAD)$([[ $(git status --porcelain) != "" ]] && echo "-dirty")" >> workspace/initial.yaml
 
 #### Certificates ############################################################
 extra_sans=${CERT_ARGS:-}
