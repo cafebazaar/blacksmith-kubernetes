@@ -10,7 +10,15 @@ coreos:
 
   units:
 <<template "common-units.yaml" .>>
+    - name: 00-${EXTERNAL_INTERFACE_NAME}.network
+      runtime: true
+      content: |
+        [Match]
+        Name=${EXTERNAL_INTERFACE_NAME}
 
+        [Network]
+        DNS=${BLACKSMITH_BOOTSTRAPPER1_IP}
+        DNS=${EXTERNAL_DNS}
     - name: kubelet.service
       command: start
       content: |
