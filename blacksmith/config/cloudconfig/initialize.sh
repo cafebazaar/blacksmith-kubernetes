@@ -39,7 +39,6 @@ function install_coreos {
 	mkdir -p "${WORKDIR}/rootfs/var/lib/blacksmith"
 	curl -L "http://<< .WebServerAddr >>/files/workspace.tar" -o ${WORKDIR}/workspace.tar
 	MD5=($(md5sum ${WORKDIR}/workspace.tar))
-	curl -X PUT "http://<< .WebServerAddr >>/api/variables/activeWorkspaceHash?value=$MD5"
 	tar -C ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$MD5 -xf ${WORKDIR}/workspace.tar || echo "Failed to untar the workspace file"
 	# To make it possible to reproduce special nodes without BoB. Be careful humans!
 	mv ${WORKDIR}/workspace.tar ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$MD5/files/
