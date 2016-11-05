@@ -38,11 +38,11 @@ function install_coreos {
 	trap "umount '${WORKDIR}/rootfs' && rm -rf '${WORKDIR}'" EXIT
 	mkdir -p "${WORKDIR}/rootfs/var/lib/blacksmith"
 	curl -L "http://<< .WebServerAddr >>/files/workspace.tar" -o ${WORKDIR}/workspace.tar
-	MD5=($(md5sum ${WORKDIR}/workspace.tar))
-	tar -C ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$MD5 -xf ${WORKDIR}/workspace.tar || echo "Failed to untar the workspace file"
+	HASH=$(curl "http://<< .WebServerAddr >>/api/variables/active-workspace-hash")
+	tar -C ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$HASH -xf ${WORKDIR}/workspace.tar || echo "Failed to untar the workspace file"
 	# To make it possible to reproduce special nodes without BoB. Be careful humans!
-	mv ${WORKDIR}/workspace.tar ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$MD5/files/
-	ln -s ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$MD5 ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/current
+	mv ${WORKDIR}/workspace.tar ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$HASH/files/
+	ln -s ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/$HASH ${WORKDIR}/rootfs/var/lib/blacksmith/workspaces/current
 	echo "Umounting the fs"
 	umount "${WORKDIR}/rootfs"
 	rm -rf "${WORKDIR}"
