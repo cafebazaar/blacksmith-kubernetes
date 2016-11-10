@@ -3,7 +3,7 @@ coreos:
   etcd2:
     name: etcd1
     advertise-client-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2379,http://<< (cluster_variable "bootstrapper1_ip") >>:4001
-    listen-client-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2379,http://$<< (cluster_variable "bootstrapper1_ip") >>:4001,http://127.0.0.1:2379,http://127.0.0.1:4001
+    listen-client-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2379,http://<< (cluster_variable "bootstrapper1_ip") >>:4001,http://127.0.0.1:2379,http://127.0.0.1:4001
     initial-advertise-peer-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2380
     listen-peer-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2380,http://127.0.0.1:2380
     initial-cluster: etcd1=http://<< (cluster_variable "bootstrapper1_ip") >>:2380,etcd2=http://<< (cluster_variable "bootstrapper2_ip") >>:2380,etcd3=http://<< (cluster_variable "bootstrapper3_ip") >>:2380
