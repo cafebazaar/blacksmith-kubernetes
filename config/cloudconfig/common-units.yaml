@@ -9,7 +9,7 @@
         content: |
           [Service]
           ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
-          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"<< (cluster_variable "pod_network") >>"}", "Backend": {"Type": "vxlan"}}'
+          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"<< (cluster_variable "pod_network") >>}", "Backend": {"Type": "vxlan"}}'
 
 <<with $address := (machine_variable "external_ip" )>><< if $address | ne "" >>
     - name: 00-<<(machine_variable "external_interface_name" )>>.network
