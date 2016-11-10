@@ -1,0 +1,15 @@
+  - path: /etc/flannel/options.env
+    encoding: "base64"
+    permissions: "0444"
+    owner: "root"
+    content: << b64template "flannel-options.env" >>
+  - path: /opt/updater.sh
+    encoding: "base64"
+    permissions: "0774"
+    owner: "root"
+    content: << b64template "updater.sh" >>
+  - path: /var/lib/blacksmith/workspaces/workspace-hash
+    encoding: "base64"
+    permissions: "0774"
+    owner: "root"
+    content: << b64 (workspace_hash) >>

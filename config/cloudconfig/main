@@ -1,0 +1,43 @@
+#cloud-config
+<</* Start $ctx */>>
+<< with $ctx := . >>
+
+<</* Start $state */>>
+<< with $state := (machine_variable "state") >>
+
+<< if $state | eq "worker" >>
+<< template "worker.yaml" $ctx >>
+
+<< else if $state | eq "bootstrapper1" >>
+<< template "bootstrapper1.yaml" $ctx>>
+
+<< else if $state | eq "bootstrapper2" >>
+<< template "bootstrapper2.yaml" $ctx >>
+
+<< else if $state | eq "bootstrapper3" >>
+<< template "bootstrapper3.yaml" $ctx >>
+
+<< else >>
+coreos:
+  update:
+    reboot-strategy: etcd-lock
+write_files:
+  - path: /tmp/state
+    content: UNEXPECTED-> << machine_variable "state" >>
+
+<< end >>
+
+<< else >>
+
+<</* when $state is empty */>>
+<< template "new.yaml" $ctx >>
+
+<</* End $state */>>
+<< end >>
+
+ssh_authorized_keys:
+<< range $index, $element := (cluster_array_variable "ssh-keys") >>
+  - << $element.Value >>
+<<end>>
+<</* End $ctx */>>
+<< end >>

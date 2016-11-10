@@ -1,0 +1,65 @@
+
+    - name: etcd2.service
+      command: start
+    
+    - name: flanneld.service
+      command: start
+      drop-ins:
+      - name: 40-network-config.conf
+        content: |
+          [Service]
+          ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
+          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"$POD_NETWORK", "Backend": {"Type": "vxlan"}}'
+
+<<with $address := (machine_variable "external_ip" )>><< if $address | ne "" >>
+    - name: 00-<<(machine_variable "external_interface_name" )>>.network
+      runtime: true
+      content: |
+        [Match]
+        Name=<<(machine_variable "external_interface_name")>>
+
+        [Network]
+        DHCP=no
+        Address=<< $address >>
+<<with $gateway := (cluster_variable "gateway")>><< if $gateway | ne "" >>
+        Gateway=<< $gateway >>
+<< end >><<end>>
+
+<< end >><<end>>
+
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 20-http-proxy.conf
+          content: |
+            [Service]
+            Environment="HTTP_PROXY=<< (cluster_variable "http_proxy") >>"
+            Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
+            Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
+        - name: 50-flanneld.conf
+          content: |
+            [Unit]
+            After=flanneld.service
+            Requires=flanneld.service
+
+    - name: early-docker.service
+      command: start
+      drop-ins:
+        - name: 20-http-proxy.conf
+          content: |
+            [Service]
+            Environment="HTTP_PROXY=<< (cluster_variable "http_proxy") >>"
+            Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
+            Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
+    - name: workspace-updater.service
+      command: start
+      content: |
+        [Unit]
+        Description=Blacksmith Kubernetes Workspace Updater
+        Documentation=https://github.com/cafebazaar/blacksmith-kubernetes
+        [Service]
+        ExecStart=/usr/bin/sh /opt/updater.sh
+        Restart=always
+        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target
