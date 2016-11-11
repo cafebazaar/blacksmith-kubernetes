@@ -10,7 +10,15 @@
           [Service]
           ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
           ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"<< (cluster_variable "pod_network") >>", "Backend": {"Type": "vxlan"}}'
-
+    - name: update-engine.service
+      drop-ins:
+        - name: 50-proxy.conf
+          content: |
+            [Service]
+            Environment="HTTP_PROXY=<< (cluster_variable "http_proxy") >>"
+            Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
+            Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
+      command: restart
 <<with $address := (machine_variable "external_ip" )>><< if $address | ne "" >>
     - name: 00-<<(machine_variable "external_interface_name" )>>.network
       runtime: true
