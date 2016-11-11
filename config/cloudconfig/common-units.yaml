@@ -35,6 +35,7 @@
             [Service]
             Environment="HTTP_PROXY=<< (cluster_variable "http_proxy") >>"
             Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
+            <<with $address := (cluster_variable "insecure_registry")>><< if $address | ne "" >>Environment="DOCKER_OPTS=--insecure-registry << (cluster_variable "insecure_registry") >>"<< end >><<end>>
             Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
         - name: 50-flanneld.conf
           content: |
@@ -50,6 +51,7 @@
             [Service]
             Environment="HTTP_PROXY=<< (cluster_variable "http_proxy") >>"
             Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
+            <<with $address := (cluster_variable "insecure_registry")>><< if $address | ne "" >>Environment="DOCKER_OPTS=--insecure-registry << (cluster_variable "insecure_registry") >>"<< end >><<end>>
             Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
     - name: workspace-updater.service
       command: start
