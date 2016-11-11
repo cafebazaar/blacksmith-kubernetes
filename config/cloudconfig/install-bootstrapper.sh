@@ -18,6 +18,13 @@ etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/<<(cluster_variable "
 etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/<<(cluster_variable "bootstrapper2_hostname")>>" "{\"host\":\"<< (cluster_variable "bootstrapper2_ip") >>\"}"
 etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/<<(cluster_variable "bootstrapper3_hostname")>>" "{\"host\":\"<< (cluster_variable "bootstrapper3_ip") >>\"}"
 
+
+
+etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/master/<<(cluster_variable "bootstrapper1_hostname")>>" "{\"host\":\"<< (cluster_variable "bootstrapper1_ip") >>\"}"
+etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/master/<<(cluster_variable "bootstrapper2_hostname")>>" "{\"host\":\"<< (cluster_variable "bootstrapper2_ip") >>\"}"
+etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/master/<<(cluster_variable "bootstrapper3_hostname")>>" "{\"host\":\"<< (cluster_variable "bootstrapper3_ip") >>\"}"
+
+
 ## End: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
 ###############################################################################
 
