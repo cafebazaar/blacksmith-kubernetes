@@ -54,7 +54,7 @@
     owner: "root"
     content: << b64file "initial.yaml" >>
 
-  - path: /var/lib/blacksmith/workspaces/ssh-keys.yml
+  - path: /var/lib/blacksmith/workspaces/ssh-keys.yaml
     encoding: "base64"
     permissions: "0744"
     owner: "root"
