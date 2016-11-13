@@ -36,7 +36,7 @@ write_files:
 << end >>
 
 ssh_authorized_keys:
-<< range $index, $element := (cluster_array_variable "ssh-keys") >>
+<< range $index, $element := (array_variable "ssh-keys") >>
   - << $element.Value >>
 <<end>>
 <</* End $ctx */>>

@@ -52,13 +52,7 @@
     encoding: "base64"
     permissions: "0744"
     owner: "root"
-    content: << b64file "initial.yaml" >>
-
-  - path: /var/lib/blacksmith/workspaces/ssh-keys.yaml
-    encoding: "base64"
-    permissions: "0744"
-    owner: "root"
-    content: << b64file "ssh-keys.yaml" >>
+    content: << b64template "initial.yaml" >>
 
   - path: /var/lib/blacksmith/workspaces/id_rsa
     encoding: "base64"
