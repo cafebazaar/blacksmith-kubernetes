@@ -8,9 +8,6 @@ if [[ $(docker -H unix:///var/run/early-docker.sock inspect blacksmith) == "[]" 
   docker -H unix:///var/run/early-docker.sock run --name blacksmith --restart=always -d --net=host $VOLUME_ARGS << (cluster_variable "blacksmith_image") >> $ARGS
 fi
 
-# Wait for blacksmith to be ready
-sleep 60
-
 ###############################################################################
 ## Begin: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
 
@@ -27,9 +24,6 @@ etcdctl set "/skydns/<<(cluster_variable "cluster_name")>>/master/<<(cluster_var
 
 ## End: Hack, until https://github.com/cafebazaar/blacksmith/issues/30 is fixed
 ###############################################################################
-
-# Wait for ???
-sleep 60
 
 ## Installing SkyDNS
 if [[ $(docker -H unix:///var/run/early-docker.sock inspect skydns) == "[]" ]]; then
