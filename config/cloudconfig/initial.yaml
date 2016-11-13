@@ -9,5 +9,5 @@ machines:
 <<end>>
 
 ssh-keys:
-<< range $index, $element := (array_variable "ssh-keys") >>  - << $element.Key | pathSplit >>: '<<$element.Value>>'
+<< range $index, $element := (array_variable "ssh-keys") >>  << $element.Key | pathSplit >>: '<<$element.Value>>'
 <<end>>
