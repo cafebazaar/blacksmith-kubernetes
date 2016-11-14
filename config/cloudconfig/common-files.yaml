@@ -12,4 +12,4 @@
     encoding: "base64"
     permissions: "0774"
     owner: "root"
-    content: << variable "workspace-hash" | b64 >>
+    content: << b64 (variable "workspace-hash") >>
