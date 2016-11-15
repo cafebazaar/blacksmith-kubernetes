@@ -31,7 +31,7 @@
         Address=<< (machine_variable "external_ip") >>/<<(cluster_variable "internal_network_netsize")>>        
         DNS=<< (cluster_variable "bootstrapper1_ip" )>>
         DNS=<< (cluster_variable "external_dns") >> 
-
+<<end>><<end>>
     - name: docker.service
       command: start
       drop-ins:

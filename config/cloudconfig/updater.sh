@@ -1,5 +1,4 @@
 /usr/bin/etcdctl watch /cafecluster/workspace-hash;
-rm -r -f /var/lib/blacksmith/workspaces/repo/;
 docker -H unix:///var/run/early-docker.sock pull  << (cluster_variable "blacksmith_image") >>; 
 docker -H unix:///var/run/early-docker.sock restart blacksmith;
 /usr/bin/etcdctl watch /cafecluster/workspace-commit-hash;
