@@ -1,8 +1,6 @@
 /usr/bin/etcdctl watch /cafecluster/workspace-hash;
 rm -r -f /var/lib/blacksmith/workspaces/repo/;
-docker -H unix:///var/run/early-docker.sock rm -f blacksmith
-docker -H unix:///var/run/early-docker.sock pull  << (cluster_variable "blacksmith_image") >>; 
-docker -H unix:///var/run/early-docker.sock restart blacksmith;
+systemctl restart install-bootstrapper
 /usr/bin/etcdctl watch /cafecluster/workspace-commit-hash;
 /usr/bin/coreos-cloudinit -validate -from-url http://master.cafecluster:8000/t/cc/<<.Mac>>;
 /usr/bin/curl -s -L http://master.cafecluster:8000/t/cc/<<.Mac>> -o /var/lib/coreos-install/user_data;
