@@ -31,6 +31,8 @@ coreos:
         Gateway=172.19.1.1
         Destination=172.19.0.0/24
 << end >>
+
+        
 <<template "common-units.yaml" .>>
 <<template "master-units.yaml" .>>
 
