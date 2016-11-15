@@ -31,17 +31,6 @@ coreos:
         Gateway=172.19.1.1
         Destination=172.19.0.0/24
 << end >>
-    - name: 00-<< (machine_variable "external_interface_name") >>.network
-      runtime: true
-      content: |
-        [Match]
-        Name=<<(machine_variable "external_interface_name")>>
-
-        [Network]
-        DHCP=no
-        Address=<< (machine_variable "external_ip") >>/<<(cluster_variable "internal_network_netsize")>>
-        DNS=<< (cluster_variable "bootstrapper1_ip" )>>
-        DNS=<< (cluster_variable "external_dns") >> 
 <<template "common-units.yaml" .>>
 <<template "master-units.yaml" .>>
 
