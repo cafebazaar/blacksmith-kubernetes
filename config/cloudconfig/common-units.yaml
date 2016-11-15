@@ -35,9 +35,6 @@
 <<with $gateway := (cluster_variable "gateway")>><< if $gateway | ne "" >>
         Gateway=<< $gateway >>
 << end >><<end>>
-
-<< end >><<end>>
-
     - name: docker.service
       command: start
       drop-ins:
