@@ -26,7 +26,7 @@
         Name=<<(machine_variable "external_interface_name")>>
 
         [Network]    
-        Address=<< (machine_variable "external_ip") >>/<<(cluster_variable "internal_network_netsize")>>        
+        Address=<< (machine_variable "external_ip") >>/22   
         DNS=<< (cluster_variable "bootstrapper1_ip" )>>
         DNS=<< (cluster_variable "external_dns") >>
         Gateway=<< (cluster_variable "gateway") >>
