@@ -25,8 +25,6 @@ coreos:
         DNS=<< (cluster_variable "bootstrapper1_ip") >>
         DNS=<< (cluster_variable "external_dns") >>
         Gateway=<< (cluster_variable "internal_network_gateway_ip") >>
-
-<< end >>
 <<template "common-units.yaml" .>>
 <<template "master-units.yaml" .>>
 
