@@ -31,10 +31,11 @@
         DHCP=no
         Address=<< (machine_variable "external_ip") >>/<<(cluster_variable "internal_network_netsize")>>        
         DNS=<< (cluster_variable "bootstrapper1_ip" )>>
-        DNS=<< (cluster_variable "external_dns") >> 
-<<with $gateway := (cluster_variable "gateway")>><< if $gateway | ne "" >>
-        Gateway=<< $gateway >>
-<< end >><<end>>
+        DNS=<< (cluster_variable "external_dns") >>
+
+        [Route]
+        Gateway=192.168.100.1
+        Destination=192.168.100.1/22
 << end >><<end>>
     - name: docker.service
       command: start
