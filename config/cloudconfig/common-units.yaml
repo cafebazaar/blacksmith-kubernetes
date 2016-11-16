@@ -25,7 +25,8 @@
         [Match]
         Name=<<(machine_variable "external_interface_name")>>
 
-        [Network]    
+        [Network]
+        DHCP=no    
         Address=<< (machine_variable "external_ip") >>/22   
         DNS=<< (cluster_variable "bootstrapper1_ip" )>>
         DNS=<< (cluster_variable "external_dns") >>
