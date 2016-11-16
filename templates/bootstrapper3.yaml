@@ -24,12 +24,11 @@ coreos:
         Address=<< (cluster_variable "bootstrapper3_ip") >>/(cluster_variable "internal_network_netsize")
         DNS=<< (cluster_variable "bootstrapper1_ip") >>
         DNS=<< (cluster_variable "external_dns") >>
+
+        [Route]
 << if (cluster_variable "internal_network_gateway_ip") | ne "" >>
         Gateway=(cluster_variable "internal_network_gateway_ip")
 << else >>
-        [Route]
-        Gateway=172.19.1.1
-        Destination=172.19.0.0/24
 << end >>
     - name: 00-<< (machine "external_interface_name") >>.network
       runtime: true
