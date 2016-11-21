@@ -34,7 +34,7 @@ coreos:
         RestartSec=10
         [Install]
         WantedBy=multi-user.target
-<< if $state | neq "unknown" >>
+<< if $state | ne "unknown" >>
 write_files:
   - path: /var/lib/blacksmith/updater.sh
     encoding: "base64"
