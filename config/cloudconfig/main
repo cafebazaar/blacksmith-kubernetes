@@ -21,6 +21,7 @@
 coreos:
   update:
     reboot-strategy: etcd-lock
+<< if $state | ne "unknown" >>
   units:
     - name: workspace-updater.service
       command: start
@@ -34,7 +35,6 @@ coreos:
         RestartSec=10
         [Install]
         WantedBy=multi-user.target
-<< if $state | ne "unknown" >>
 write_files:
   - path: /var/lib/blacksmith/updater.sh
     encoding: "base64"
