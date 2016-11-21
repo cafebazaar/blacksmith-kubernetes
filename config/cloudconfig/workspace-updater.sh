@@ -1,4 +1,4 @@
-export $CURRENT_HASH=﷼)/usr/bin/etcdctl get cafecluster/workspace-hash(;
+export $CURRENT_HASH=$(/usr/bin/etcdctl get cafecluster/workspace-hash);
 export $BOOT_HASH=$(cat /var/lib/blacksmith/workspaces/workspace-hash);
 
 if [[ "$CURRENT_HASH" != "$BOOT_HASH" ]];
