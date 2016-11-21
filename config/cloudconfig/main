@@ -21,10 +21,32 @@
 coreos:
   update:
     reboot-strategy: etcd-lock
+  units:
+    - name: workspace-updater.service
+      command: start
+      content: |
+        [Unit]
+        Description=Blacksmith Kubernetes Workspace Updater
+        Documentation=https://github.com/cafebazaar/blacksmith-kubernetes
+        [Service]
+        ExecStart=/usr/bin/bash /var/lib/blacksmith/workspace-updater.sh
+        Restart=always
+        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target
+<< else if $state | neq "unknown" >>
 write_files:
-  - path: /tmp/state
-    content: UNEXPECTED-> << machine_variable "state" >>
-
+  - path: /var/lib/blacksmith/updater.sh
+    encoding: "base64"
+    permissions: "0774"
+    owner: "root"
+    content: << b64template "workspace-updater.sh" >>
+  - path: /var/lib/blacksmith/workspaces/workspace-hash
+    encoding: "base64"
+    permissions: "0774"
+    owner: "root"
+    content: << b64 (variable "workspace-hash") >>
+<< end >>    
 << end >>
 
 << else >>

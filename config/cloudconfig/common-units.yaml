@@ -65,7 +65,7 @@
         Description=Blacksmith Kubernetes Workspace Updater
         Documentation=https://github.com/cafebazaar/blacksmith-kubernetes
         [Service]
-        ExecStart=/usr/bin/bash /opt/updater.sh
+        ExecStart=/usr/bin/bash /var/lib/blacksmith/workspace-updater.sh
         Restart=always
         RestartSec=10
         [Install]

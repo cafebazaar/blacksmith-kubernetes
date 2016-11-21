@@ -24,7 +24,7 @@
     }],
     "files": [
       {
-        "path": "/opt/installer",
+        "path": "/var/lib/blacksmith/installer",
         "filesystem": "root",
         "mode": 508,
         "user": {
