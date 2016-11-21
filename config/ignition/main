@@ -7,7 +7,7 @@
       {
         "name": "installer.service",
         "enable": true,
-        "contents": "[Unit]\nRequires=network-online.target\nAfter=network-online.target\n[Service]\nType=simple\nExecStart=/usr/bin/sh /opt/installer\n[Install]\nWantedBy=multi-user.target\n"
+        "contents": "[Unit]\nRequires=network-online.target\nAfter=network-online.target\n[Service]\nType=simple\nExecStart=/usr/bin/sh /var/lib/blacksmith/installer.sh\n[Install]\nWantedBy=multi-user.target\n"
       }
     ]
   },
@@ -24,7 +24,7 @@
     }],
     "files": [
       {
-        "path": "/var/lib/blacksmith/installer",
+        "path": "/var/lib/blacksmith/installer.sh",
         "filesystem": "root",
         "mode": 508,
         "user": {
