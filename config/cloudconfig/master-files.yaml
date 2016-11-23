@@ -25,7 +25,7 @@
     content: << b64template "kube-apiserver.yaml" >>
 
   - path: /etc/kubernetes/manifests/kube-proxy.yaml
-    en: "base64"
+    encoding: "base64"
     permissions: "0644"
     owner: "root"
     content: << b64template "kube-proxy.yaml" >>
