@@ -61,7 +61,7 @@
     content: << b64file "id_rsa" >>
 
   - path: /var/lib/blacksmith/workspaces/id_rsa.pub
-    encod: "base64"
+    encoding: "base64"
     permissions: "0744"
     owner: "root"
     content: << b64file "id_rsa.pub" >>
