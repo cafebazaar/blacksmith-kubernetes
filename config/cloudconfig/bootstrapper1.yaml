@@ -1,5 +1,6 @@
 hostname: <<(cluster_variable "bootstrapper1_hostname")>>.<<(cluster_variable "cluster_name")>>
-
+coreos:
+  etcd2:
     name: etcd1
     advertise-client-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2379,http://<< (cluster_variable "bootstrapper1_ip") >>:4001
     listen-client-urls: http://<< (cluster_variable "bootstrapper1_ip") >>:2379,http://<< (cluster_variable "bootstrapper1_ip") >>:4001,http://127.0.0.1:2379,http://127.0.0.1:4001
