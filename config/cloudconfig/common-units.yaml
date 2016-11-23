@@ -48,8 +48,6 @@
             After=flanneld.service
             Requires=flanneld.service
 
-    - name: early-docker.service
-      command: start
       drop-ins:
         - name: 20-http-proxy.conf
           content: |
