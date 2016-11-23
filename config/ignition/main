@@ -7,7 +7,7 @@
       {
         "name": "installer.service",
         "enable": true,
-        "contents": "[Unit]\nRequires=network-online.target\nAfter=network-online.target\n[Service]\nType=simple\nExecStart=/usr/bin/sh /var/lib/blacksmith/installer.sh\n[Install]\nWantedBy=multi-user.target\n"
+        "contents": "[Unit]\nRequires=network-online.target\nAfter=network-online.target\n[Service]\nType=simple\nExecStart=/usr/bin/sh /var/lib/blacksmith/installer.sh\nRestart=always\n[Install]\nWantedBy=multi-user.target\n"
       }
     ]
   },

@@ -40,7 +40,7 @@
             [Service]
             Environment="HTTP_PROXY=<< (cluster_variable "http_proxy") >>"
             Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
-            <<wi")>><< if $address | ne "" >>Environment="DOCKER_OPTS=--insecure-registry << $address >>"<< end >><<end>>
+            <<with $address := (cluster_variable "insecure-registry")>><< if $address | ne "" >>Environment="DOCKER_OPTS=--insecure-registry << $address >>"<< end >><<end>>
             Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
         - name: 50-flanneld.conf
           content: |
