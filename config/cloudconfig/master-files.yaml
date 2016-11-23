@@ -64,4 +64,4 @@
     encoding: "base64"
     permissions: "0744"
     owner: "root"
-    content: << b64file "id_rsa.pub" >>
+    content:
