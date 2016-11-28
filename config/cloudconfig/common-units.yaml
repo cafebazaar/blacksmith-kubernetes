@@ -19,19 +19,6 @@
             Environment="HTTPS_PROXY=<< (cluster_variable "https_proxy") >>"
             Environment="NO_PROXY=localhost,127.0.0.1,.<< (cluster_variable "cluster_name") >>,<< (cluster_variable "bootstrapper1_ip") >>,<< (cluster_variable "bootstrapper2_ip") >>,<< (cluster_variable "bootstrapper3_ip") >>"
       command: restart
-    - name: 10-static.network
-      runtime: true
-      content: |
-        [Match]
-        Name=<<(machine_variable "external_interface_name")>>
-
-        [Network]
-        DHCP=no    
-        Address=<< (machine_variable "external_ip") >>/22   
-        DNS=<< (cluster_variable "bootstrapper1_ip" )>>
-        DNS=<< (cluster_variable "external_dns") >>
-        Gateway=<< (cluster_variable "gateway") >>
-
     - name: docker.service
       command: start
       drop-ins:
