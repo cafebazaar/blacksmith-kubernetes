@@ -22,7 +22,7 @@ spec:
     - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,apps/v1alpha1=true
+    - --runtime-config=api/all=true
     ports:
     - containerPort: 4443
       hostPort: 4443
