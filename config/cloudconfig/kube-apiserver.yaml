@@ -23,6 +23,8 @@ spec:
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --runtime-config=api/all=true
+    - --authorization-mode=RBAC
+    - --authorization-rbac-super-user=admin
     ports:
     - containerPort: 4443
       hostPort: 4443
