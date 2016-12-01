@@ -3,8 +3,3 @@
     permissions: "0444"
     owner: "root"
     content: << b64template "flannel-options.env" >>
-  - path: /var/lib/blacksmith/workspace-updater.sh
-    encoding: "base64"
-    permissions: "0774"
-    owner: "root"
-    content: << b64template "workspace-updater.sh" >>
