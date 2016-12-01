@@ -34,5 +34,4 @@ ssh_authorized_keys:
   - << $element.Value >>
 <<end>>
 <</* End $ctx */>>
-<< end >>
-<< end >>
+
