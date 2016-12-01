@@ -21,7 +21,6 @@
 coreos:
   update:
     reboot-strategy: etcd-lock
-<< if $state | ne "unknown" >>
   units:
     - name: workspace-updater.service
       command: start
@@ -46,16 +45,8 @@ write_files:
     permissions: "0774"
     owner: "root"
     content: << b64 (variable "workspace-hash") >>
-<< end >>    
 << end >>
 
-<< else >>
-
-<</* when $state is empty */>>
-<< template "new.yaml" $ctx >>
-
-<</* End $state */>>
-<< end >>
 
 ssh_authorized_keys:
 << range $index, $element := (array_variable "ssh-keys") >>
