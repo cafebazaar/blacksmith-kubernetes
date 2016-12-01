@@ -16,8 +16,6 @@
 
 << else if $state | eq "bootstrapper3" >>
 << template "bootstrapper3.yaml" $ctx >>
-
-<< else >>
 coreos:
   update:
     reboot-strategy: etcd-lock
@@ -45,7 +43,7 @@ write_files:
     permissions: "0774"
     owner: "root"
     content: << b64 (variable "workspace-hash") >>
-<< end >>
+
 
 
 ssh_authorized_keys:
