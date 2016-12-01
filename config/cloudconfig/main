@@ -1,23 +1,10 @@
 #cloud-config
-<</* Start $ctx */>>
-<< with $ctx := . >>
 
 <</* Start $state */>>
 << with $state := (machine_variable "state") >>
 
-<< if $state | eq "worker" >>
-<< template "worker.yaml" $ctx >>
+<< template $state . >>
 
-<< else if $state | eq "bootstrapper1" >>
-<< template "bootstrapper1.yaml" $ctx>>
-
-<< else if $state | eq "bootstrapper2" >>
-<< template "bootstrapper2.yaml" $ctx >>
-
-<< else if $state | eq "bootstrapper3" >>
-<< template "bootstrapper3.yaml" $ctx >>
-
-<< end >>
 coreos:
   update:
     reboot-strategy: etcd-lock
