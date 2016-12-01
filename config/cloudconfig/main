@@ -1,10 +1,5 @@
 #cloud-config
-
-<</* Start $state */>>
-<< with $state := (machine_variable "state") >>
-
-<< template $state . >>
-
+<< (template (machine_variable "state") .) >>
 coreos:
   update:
     reboot-strategy: etcd-lock
