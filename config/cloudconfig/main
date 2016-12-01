@@ -35,16 +35,16 @@ coreos:
         [Install]
         WantedBy=multi-user.target
 write_files:
-  - path: /var/lib/blacksmith/updater.sh
+  - path: /etc/flannel/options.env
+    encoding: "base64"
+    permissions: "0444"
+    owner: "root"
+    content: << b64template "flannel-options.env" >>
+  - path: /var/lib/blacksmith/workspace-updater.sh
     encoding: "base64"
     permissions: "0774"
     owner: "root"
     content: << b64template "workspace-updater.sh" >>
-  - path: /var/lib/blacksmith/workspaces/workspace-hash
-    encoding: "base64"
-    permissions: "0774"
-    owner: "root"
-    content: << b64 (variable "workspace-hash") >>
 
 
 ssh_authorized_keys:
