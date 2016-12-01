@@ -1,5 +1,5 @@
 #cloud-config
-<< (template (machine_variable "state") .) >>
+<< (render (join (machine_variable "state") ".yaml" )) >>
 coreos:
   update:
     reboot-strategy: etcd-lock
