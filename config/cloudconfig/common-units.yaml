@@ -46,16 +46,3 @@
             [Unit]
             After=flanneld.service
             Requires=flanneld.service
-    - name: workspace-updater.service
-      command: start
-      content: |
-        [Unit]
-        Description=Blacksmith Kubernetes Workspace Updater
-        Documentation=https://github.com/cafebazaar/blacksmith-kubernetes
-        [Service]
-        ExecStartPre=curl -o /var/lib/blacksmith/workspace-updater.sh http://master.cafecluster:8000/api/render/?path=workspace-updater.sh&mac=<<.Mac>>
-        ExecStart=/usr/bin/bash /var/lib/blacksmith/workspace-updater.sh
-        Restart=always
-        RestartSec=10
-        [Install]
-        WantedBy=multi-user.target
