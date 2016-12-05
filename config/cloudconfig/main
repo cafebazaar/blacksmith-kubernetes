@@ -1,2 +1,1 @@
-
 << (render (join (machine_variable "state") ".yaml"))>>
