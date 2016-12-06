@@ -2,4 +2,4 @@
     encoding: "base64"
     permissions: "0444"
     owner: "root"
-    content: << b64template "flannel-options.env" >>
+    content: {{ b64template "flannel-options.env" }}
