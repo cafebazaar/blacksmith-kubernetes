@@ -1,0 +1,63 @@
+cluster-variables:
+  coreos-version: "1192.2.0"
+  workspace-repo: "https://github.com/cafebazaar/blacksmith-kubernetes.git"
+  net-conf: '{"netmask":"255.255.255.0", "classlessRouteOption": [{"router": "172.19.1.1", "size":24, "destination": "172.19.0.0"}]}'
+  cluster_name: "CLUSTER_NAME"
+  internal_net_conf: '{"netmask":"255.255.255.0", "classlessRouteOption": [{"router": "172.19.1.1", "size":24, "destination": "172.19.0.0"}]}'
+  bootstrapper1_hostname: "bootstrapper1"
+  bootstrapper1_ip: "172.19.1.11"
+  bootstrapper2_hostname: "bootstrapper2"
+  bootstrapper2_ip: "172.19.1.12"
+  bootstrapper3_hostname: "bootstrapper3"
+  bootstrapper3_ip: "172.19.1.13"
+  internal_network_netsize: "24"
+  internal_network_gateway_ip: "172.19.1.1"
+  external_dns: "8.8.8.8"
+  internal_network_workers_start: "172.19.1.21"
+  internal_network_workers_limit: "107"
+  pod_network: "10.1.0.0/16"
+  service_ip_range: "10.100.0.0/16"
+  k8s_service_ip: "10.100.0.1"
+  dns_server_ip: "10.100.0.10"
+  k8s_lb_dns: "DOMAIN"
+  gateway: "192.168.100.1"
+  http_proxy: "HTTP_PROXY"
+  https_proxy: "HTTPS_PROXY"
+  k8s_version: "v1.4.5_coreos.0"
+  hyperkube_image: "quay.io/coreos/hyperkube:v1.4.5_coreos.0"
+  blacksmith_image: "quay.io/cafebazaar/blacksmith:dev"
+  skydns_image: "quay.io/cafebazaar/skydns:2.5.3a-42-gc4d7e3d"
+  file_server: "http://172.19.1.1/"
+  ca: "CA"
+  apiserver-cert: "APISERVER_CERT"
+  apiserver-key: "APISERVER_KEY"
+  machine-cert: "MACHINE_CERT"
+  machine-key: "MACHINE_KEY"
+  insecure-registry: "192.168.101.177:5000"
+machines:
+  00000000000a:
+    hostname: "bootstrapper1"
+    internal_interface_name: "eth1"
+    external_interface_name: "eth2"
+    external_ip: "192.168.1.2"
+    blacksmith_server: "false"
+    state: "unknown"
+    _machine: '{"ip":"172.19.1.11","first_seen":0,"type":1}'
+  00000000000b:
+    hostname: "bootstrapper2"
+    internal_interface_name: "eth1"
+    external_interface_name: "eth2"
+    external_ip: "192.168.1.3"
+    blacksmith_server: "false"
+    state: "unknown"
+    _machine: '{"ip":"172.19.1.12","first_seen":0,"type":1}'
+  00000000000c:
+    hostname: "bootstrapper3"
+    internal_interface_name: "eth1"
+    external_interface_name: "eth2"
+    external_ip: "192.168.1.4"
+    blacksmith_server: "false"
+    state: "unknown"
+    _machine: '{"ip":"172.19.1.13","first_seen":0,"type":1}'
+ssh-keys:
+  user1: "PUBLICKEY"
