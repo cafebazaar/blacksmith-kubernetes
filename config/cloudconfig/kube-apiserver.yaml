@@ -7,22 +7,28 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: ${HYPERKUBE_IMAGE}
+    image: {{ (cluster_variable "hyperkube_image") }}
     command:
     - /hyperkube
     - apiserver
     - --bind-address=0.0.0.0
-    - --etcd-servers=http://${BLACKSMITH_BOOTSTRAPPER1_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER2_IP}:4001,http://${BLACKSMITH_BOOTSTRAPPER3_IP}:4001
+    - --etcd-servers=http://{{ (cluster_variable "bootstrapper1_ip") }}:4001,http://{{ (cluster_variable "bootstrapper2_ip") }}:4001,http://{{ (cluster_variable "bootstrapper3_ip") }}:4001
     - --allow-privileged=true
-    - --service-cluster-ip-range=${SERVICE_IP_RANGE}
+    - --service-cluster-ip-range={{ (cluster_variable "service_ip_range") }}
     - --secure-port=4443
-    - --advertise-address=${BLACKSMITH_BOOTSTRAPPER1_IP}
+    - --advertise-address={{ (cluster_variable "bootstrapper1_ip") }}
     - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,apps/v1alpha1=true
+    - --runtime-config=api/all=true
+    - --authorization-mode=RBAC
+    - --authorization-rbac-super-user=admin
+    - --oidc-issuer-url=https://k8s.roo.cloud:32000/dex
+    - --oidc-client-id=cafecluster-dex-app
+    - --oidc-username-claim=email
+    - --oidc-groups-claim=groups
     ports:
     - containerPort: 4443
       hostPort: 4443

@@ -1,5 +1,0 @@
-binaries/*
-!binaries/download-*.sh
-!binaries/*.asc
-/workspace
-/Takeaways

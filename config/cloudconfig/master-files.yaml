@@ -2,46 +2,43 @@
     encoding: "base64"
     permissions: "0444"
     owner: "root"
-    content: << b64template "ca.pem" >>
+    content: {{ (cluster_variable "ca") }}
+
 
   - path: /etc/kubernetes/ssl/apiserver.pem
     encoding: "base64"
     permissions: "0444"
     owner: "root"
-    content: << b64template "apiserver.pem" >>
+    content: {{ (cluster_variable "apiserver-cert" ) }}
 
   - path: /etc/kubernetes/ssl/apiserver-key.pem
     encoding: "base64"
     permissions: "0400"
     owner: "root"
-    content: << b64template "apiserver-key.pem" >>
+    content: {{ (cluster_variable "apiserver-key" ) }}
 
   - path: /etc/kubernetes/manifests/kube-apiserver.yaml
     encoding: "base64"
     permissions: "0644"
     owner: "root"
-    content: << b64template "kube-apiserver.yaml" >>
+    content: {{ b64template "kube-apiserver.yaml" }}
 
   - path: /etc/kubernetes/manifests/kube-proxy.yaml
     encoding: "base64"
     permissions: "0644"
     owner: "root"
-    content: << b64template "kube-proxy.yaml" >>
+    content: {{ b64template "kube-proxy.yaml" }}
 
   - path: /etc/kubernetes/manifests/kube-controller-manager.yaml
     encoding: "base64"
     permissions: "0644"
     owner: "root"
-    content: << b64template "kube-controller-manager.yaml" >>
+    content: {{ b64template "kube-controller-manager.yaml" }}
 
   - path: /etc/kubernetes/manifests/kube-scheduler.yaml
     encoding: "base64"
     permissions: "0644"
     owner: "root"
-    content: << b64template "kube-scheduler.yaml" >>
+    content: {{ b64template "kube-scheduler.yaml" }}
 
-  - path: /tmp/install-bootstrapper.sh
-    encoding: "base64"
-    permissions: "0744"
-    owner: "root"
-    content: << b64template "install-bootstrapper.sh" >>
+    

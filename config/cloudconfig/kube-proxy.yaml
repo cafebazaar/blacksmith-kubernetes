@@ -7,7 +7,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-proxy
-    image: ${HYPERKUBE_IMAGE}
+    image: {{ (cluster_variable "hyperkube_image") }}
     command:
     - /hyperkube
     - proxy
