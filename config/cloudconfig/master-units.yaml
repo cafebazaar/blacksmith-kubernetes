@@ -29,7 +29,7 @@
         [Unit]
         Description=Initializes the machine
         Requires=docker.service
-        After=etcd.service etcd2.service docker.service
+        After=etcd2.service docker.service
 
         [Service]
         Type=oneshot

@@ -8,8 +8,6 @@
         [Network]
         Address={{ (machine_variable "external_ip") }}/{{(cluster_variable "external_network_netsize")}}
         Gateway={{ (cluster_variable "gateway") }}
-    - name: etcd2.service
-      command: start
     
     - name: flanneld.service
       command: start
