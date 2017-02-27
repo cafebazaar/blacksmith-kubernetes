@@ -22,18 +22,3 @@
         RestartSec=10
         [Install]
         WantedBy=multi-user.target
-
-    - name: install-bootstrapper.service
-      command: start
-      content: |
-        [Unit]
-        Description=Initializes the machine
-        Requires=docker.service
-        After=etcd2.service docker.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/tmp/install-bootstrapper.sh {{(machine_variable "internal_interface_name")}}
-
-        [Install]
-        WantedBy=multi-user.target
