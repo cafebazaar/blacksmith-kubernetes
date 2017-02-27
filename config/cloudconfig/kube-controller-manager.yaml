@@ -13,7 +13,7 @@ spec:
     - controller-manager
     - --master=http://127.0.0.1:8080
     - --leader-elect=true
-    - --cluster-name={{ (blacksmith_variable "cluster_name") }}
+    - --cluster-name={{ (blacksmith_variable "cluster-name") }}
     - --service-account-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
     livenessProbe:

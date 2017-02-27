@@ -23,7 +23,7 @@ coreos:
         Environment="RKT_OPTS=--volume=resolv,kind=host,source=/etc/resolv.conf --mount volume=resolv,target=/etc/resolv.conf --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume modprobe,kind=host,source=/usr/sbin/modprobe \--mount volume=modprobe target=/usr/sbin/modprobe --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules"
         Environment="HTTP_PROXY={{ (cluster_variable "http_proxy") }}"
         Environment="HTTPS_PROXY={{ (cluster_variable "https_proxy") }}"
-        Environment="NO_PROXY=localhost,127.0.0.1,.{{ (blacksmith_variable "cluster_name") }},{{ (cluster_variable "bootstrapper1_ip") }},{{ (cluster_variable "bootstrapper2_ip") }},{{ (cluster_variable "bootstrapper3_ip") }}"
+        Environment="NO_PROXY=localhost,127.0.0.1,.{{ (blacksmith_variable "cluster-name") }},{{ (cluster_variable "bootstrapper1_ip") }},{{ (cluster_variable "bootstrapper2_ip") }},{{ (cluster_variable "bootstrapper3_ip") }}"
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
           --api-servers=https://{{ (cluster_variable "bootstrapper1_ip") }}:4443,https://{{ (cluster_variable "bootstrapper2_ip") }}:4443,https://{{ (cluster_variable "bootstrapper3_ip") }}:4443 \
           --register-node=true \
@@ -31,7 +31,7 @@ coreos:
           --config=/etc/kubernetes/manifests \
           --node-ip={{.IP}} \
           --cluster-dns={{(cluster_variable "dns_server_ip")}} \
-          --cluster-domain={{ (blacksmith_variable "cluster_name") }} \
+          --cluster-domain={{ (blacksmith_variable "cluster-name") }} \
           --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
         Restart=always
         RestartSec=10

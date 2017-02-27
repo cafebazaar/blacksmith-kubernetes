@@ -1,4 +1,4 @@
-hostname: {{(cluster_variable "bootstrapper1_hostname")}}.{{(blacksmith_variable "cluster_name")}}
+hostname: {{(cluster_variable "bootstrapper1_hostname")}}.{{(blacksmith_variable "cluster-name")}}
 coreos:
   etcd2:
     name: etcd1
@@ -22,7 +22,7 @@ coreos:
         [Network]
         Address={{ (cluster_variable "bootstrapper1_ip") }}/{{(cluster_variable "internal_network_netsize")}}
         DNS={{ (cluster_variable "bootstrapper1_ip") }}
-        DNS={{ (blacksmith_variable "external_dns") }}
+        DNS={{ (cluster_variable "external_dns") }}
 {{template "common-units.yaml" .}}
 {{template "master-units.yaml" .}}
 
